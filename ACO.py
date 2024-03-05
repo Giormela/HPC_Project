@@ -1,10 +1,8 @@
-#from colony import *
-import sys
+from lib.colony import *
 
-sys.path.insert(0, "./lib")
-#colony = Colony(N=100, rho=0.1, delta=0.05)
+colony = Colony(N=2, rho=0.1, delta=0.05, params_to_explore=["olevel"])
 
-#colony.simulate(iter=1)
+colony.simulate(iter=2)
 
 
     
