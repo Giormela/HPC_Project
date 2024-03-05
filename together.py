@@ -11,48 +11,6 @@ import sys
 import subprocess
 import re
 
-DefaultSize = 4096
-
-#----------------------------------------------------------------
-# Deployment function: launch a MPI4PY pgm on a set of cluster nodes
-# + autocompute the number of allocated nodes
-#----------------------------------------------------------------
-def deployOS(matSide,strategy):
-   # - Generates the "allocated machines file" with a unique file name
-   filename = uuid.uuid4().hex
-   print(filename)
-   os.system("srun hostname | sort -u > " + filename)
-   # - Automatic counting of the number of allocated nodes
-   file = open(filename,"r")
-   lines = file.readlines()
-   nbNodes = len(lines)
-   # - Deployment of the application on all the allocated nodes 
-   #    according to the deployment rules and strategy
-   print("NbNodes: " + str(nbNodes) + ", Strategy: " + strategy) 
-   # - "socket" deployment strategy on Kyle
-   if strategy == "socket":
-      nbProcesses = 2*nbNodes
-      cmd = "/usr/bin/mpirun -np " + str(nbProcesses) + \
-            " -map-by ppr:1:socket:PE=8 -rank-by socket " + \
-            " python3 matprod.py " + " --s " + str(matSide) + " --nt 8 " + " --r "
-      print("Executed command: " + cmd)
-      print("---->")
-      os.system(cmd)
-
-   # - "core" deployment strategy on Kyle
-   if strategy == "core":
-      nbProcesses = 16*nbNodes
-      cmd = "/usr/bin/mpirun -np " + str(nbProcesses) + \
-            " -map-by ppr:1:core:PE=1 -rank-by core " + \
-            " python3 matprod.py " + " --s " + str(matSide) + " --nt 1 " + " --r "
-      print("Executed command: " + cmd)
-      print("---->")
-      os.system(cmd)
-
-   # - remove the "allocated machines file" with a unique file name
-   os.system("rm -f " + filename)
-
-
 #----------------------------------------------------------------
 # Cmd line parsing
 #----------------------------------------------------------------
@@ -75,10 +33,9 @@ def execute_binary(simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3
   print("")
   res = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
   return res
-  #os.system(cmd)
 
 def execute_makefile(o_level="-O3", simd="avx2"):
-  os.chdir("..")
+  os.chdir("/usr/users/st76i/st76i_1/iso3dfd-st7")
   cmd = "make Olevel=" + o_level + \
         " simd=" + simd + \
         " last"
@@ -96,17 +53,17 @@ def collect_result(res):
 #-----------------------------------------------------------------
 # Main code
 #-----------------------------------------------------------------
-print("Deployment using OS module")
-print("")
-print("")
+#print("Deployment using OS module")
+#print("")
+#print("")
 
-(o_level, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size) = cmdLineParsing()
+#(o_level, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size) = cmdLineParsing()
 
-execute_makefile(o_level, simd)
+#execute_makefile(o_level, simd)
 
-res = execute_binary(simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size)
+#res = execute_binary(simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size)
 
-collect_result(res)
+#collect_result(res)
 
 
 
