@@ -14,11 +14,10 @@ class Ant:
     def rank_solution(self):
         olevel = self.get_param_solution("olevel")
         simd = self.get_param_solution("simd")
-        n = self.get_param_solution("n")
         num_threads = self.get_param_solution("num_threads")
         n_size = self.get_param_solution("n_size")
 
-        self.points = cost_function(olevel, simd, n, n, n, num_threads, str(100), n_size, n_size, n_size)
+        self.points = cost_function(olevel, simd, "256", "256", "256", num_threads, "100", n_size, n_size, n_size)
 
     
     def add_solution(self, param: Param, index: int):

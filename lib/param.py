@@ -13,7 +13,6 @@ class Param:
     
 
 PARAMS_DICT = {"olevel": Param("olevel", ["-O2", "-O3", "-Ofast"], "-O3"),
-           "simd": Param("simd", ["avx2"], "avx2"),
-           "n": Param("n", [256, 512], 256),
+           "simd": Param("simd", ["sse", "avx", "avx2",  "avx512"], "avx2"),
            "num_threads": Param("num_threads", [i for i in range(1, 33)], 32),
-           "n_size": Param("n_size", [16, 32, 64], 32)}
+           "n_size": Param("n_size", [16, 32, 64, 128, 256], 32)}

@@ -1,7 +1,7 @@
 from lib.ant import * 
 import random
 
-PARAMS_TO_EXPLORE = ["olevel", "simd", "n", "num_threads", "n_size"]
+PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n_size"]
 
 class Node:
     def __init__(self, param: Param = None):
@@ -79,24 +79,30 @@ class Colony:
         for ant in self.ants:
             ant.rank_solution()
         ranked = sorted(self.ants, key=lambda x: x.points)
+        print([(a.points, a.solution) for a in ranked])
 
         coeff = 2.0
         step = 2.0 / self.N
         for ant in ranked:
             ant.pheromon = abs(coeff)
             coeff -= step
+        
+        return ranked[0].solution
+        
     
     def run(self):
         for ant in self.ants:
             self.root.explore_R(ant)
 
     def simulate(self, iter):
-        self.print()
+        #self.print()
         for i in range(iter):
             self.run()
             self.rank_solutions()
             self.update_nodes()
-            self.print()
+            #self.print()
+            print("Iteration #", i)
+        print(self.rank_solutions())
 
     def print(self, list=None):
         if not list:
