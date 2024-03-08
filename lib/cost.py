@@ -2,8 +2,8 @@ import os
 import subprocess
 import re
 
-def execute_binary(simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size):
-    filename = "iso3dfd_dev13_cpu_" + simd + ".exe"
+def execute_binary(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size):
+    filename = "iso3dfd_dev13_cpu_" + olevel + "_" + simd + ".exe"
     cmd = "bin/" + filename + \
         " " + n1 + " " + n2 + " " + n3 + \
         " " + num_threads + " " + num_reps + \
@@ -32,10 +32,6 @@ def find_cost(res) -> float:
 
 def cost_function(o_level, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size) -> float:
     execute_makefile(o_level, simd)
-    res = execute_binary(simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size)
+    res = execute_binary(o_level, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size)
     return find_cost(res)
-
-
-
-
 

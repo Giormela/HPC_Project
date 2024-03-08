@@ -76,9 +76,10 @@ class Colony:
             self.update_nodes(child)
 
     def rank_solutions(self):
+        # Evaluate the cost of each ant solution
         for ant in self.ants:
             ant.rank_solution()
-        ranked = sorted(self.ants, key=lambda x: x.points)
+        ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
         print([(a.points, a.solution) for a in ranked])
 
         coeff = 2.0
@@ -97,7 +98,9 @@ class Colony:
     def simulate(self, iter):
         #self.print()
         for i in range(iter):
+            # Let each ant explore the tree
             self.run()
+            # 
             self.rank_solutions()
             self.update_nodes()
             #self.print()
