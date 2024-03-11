@@ -1,8 +1,5 @@
 from lib.colony import *
 
-colony = Colony(N=30, rho=0.1, delta=0.05)
+colony = Colony(N=10, rho=0.1, delta=0.1)
 
-colony.simulate(iter=50)
-
-
-    
+colony.simulate(iter=20)

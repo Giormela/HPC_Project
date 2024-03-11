@@ -1,7 +1,7 @@
 from lib.ant import * 
 import random
 
-PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n_size"]
+PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
 
 class Node:
     def __init__(self, param: Param = None):
@@ -11,7 +11,7 @@ class Node:
         self.pheromons = []
         self.ants_cross = []
     
-    def explore_R(self, ant: Ant):
+    def explored_by_ant(self, ant: Ant):
         self.ants_cross.append(ant)
         if not self.param:
             return
@@ -39,13 +39,13 @@ class Node:
 
   
 class Colony:
-    def create_colony_R(params_to_explore) -> Node:  
+    def create_nodes(params_to_explore) -> Node:  
         if not params_to_explore: 
             return Node()   
         param = PARAMS_DICT[params_to_explore.pop(0)] 
 
         node = Node(param)
-        node.children = [Colony.create_colony_R(params_to_explore.copy()) for i in range(param.domain_dim)] 
+        node.children = [Colony.create_nodes(params_to_explore.copy()) for i in range(param.domain_dim)] 
         node.probs = [1.0/len(node.children) for i in range(param.domain_dim)]
         node.pheromons = [1.0 for i in range(param.domain_dim)]
         return node
@@ -55,7 +55,7 @@ class Colony:
         self.rho = rho
         self.delta = delta
         self.ants = [Ant() for i in range(N)]
-        self.root = Colony.create_colony_R(params_to_explore)
+        self.root = Colony.create_nodes(params_to_explore)
 
     def update_nodes(self, node: Node=None):
         if not node:
@@ -75,12 +75,11 @@ class Colony:
         for child in node.children:
             self.update_nodes(child)
 
-    def rank_solutions(self):
+    def rank_ants(self):
         # Evaluate the cost of each ant solution
         for ant in self.ants:
             ant.rank_solution()
         ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
-        print([(a.points, a.solution) for a in ranked])
 
         coeff = 2.0
         step = 2.0 / self.N
@@ -93,19 +92,17 @@ class Colony:
     
     def run(self):
         for ant in self.ants:
-            self.root.explore_R(ant)
+            self.root.explored_by_ant(ant)
 
     def simulate(self, iter):
-        #self.print()
         for i in range(iter):
             # Let each ant explore the tree
             self.run()
-            # 
-            self.rank_solutions()
+            # Test solutions and define multiplier of each ant according to the rank achieved
+            self.rank_ants()
+            # Update pheromon and probability of each node
             self.update_nodes()
-            #self.print()
-            print("Iteration #", i)
-        print(self.rank_solutions())
+
 
     def print(self, list=None):
         if not list:

@@ -15,9 +15,11 @@ class Ant:
         olevel = self.get_param_solution("olevel")
         simd = self.get_param_solution("simd")
         num_threads = self.get_param_solution("num_threads")
-        n_size = self.get_param_solution("n_size")
+        n1_size = self.get_param_solution("n1_size")
+        n2_size = self.get_param_solution("n2_size")
+        n3_size = self.get_param_solution("n3_size")
 
-        self.points = cost_function(olevel, simd, "256", "256", "256", num_threads, "100", n_size, n_size, n_size)
+        self.points = cost_function(olevel, simd, "256", "256", "256", num_threads, "100", n1_size, n2_size, n3_size)
 
     
     def add_solution(self, param: Param, index: int):
