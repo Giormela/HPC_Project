@@ -9,7 +9,7 @@ import uuid
 # TODO seed
 MatSizeDefault = 4096
 
-def runSub(matSize,strategy,Olevel,vectorExtension,x,y,z):
+def runSub(matSize,strategy,Olevel,vectorExtension,x,y,z,user):
     subprocess.call(['bash', './run_subprocess.sh'])
     filename = uuid.uuid4().hex
     os.system("srun hostname | sort -u > " + filename)
@@ -25,7 +25,7 @@ def runSub(matSize,strategy,Olevel,vectorExtension,x,y,z):
         nbProcesses = 2*nbNodes
         cmd = "mpirun -np " + str(nbProcesses) + \
             " -map-by ppr:1:socket:PE=8 -rank-by socket " + \
-            "/usr/users/st76i/st76i_14/iso3dfd-st7/bin/iso3dfd_dev13_cpu_"+Olevel + \
+            "/usr/users/st76i/st76i_"+str(user)+"/iso3dfd-st7/bin/iso3dfd_dev13_cpu_"+Olevel + \
             "_"+vectorExtension+".exe "+str(matSize)+" "+str(matSize)+" "+str(matSize) + \
                 " 32 100 "+str(x)+" "+str(y)+" "+str(z)
         print("Executed command: " + cmd)
@@ -34,7 +34,7 @@ def runSub(matSize,strategy,Olevel,vectorExtension,x,y,z):
     if strategy == "core":
         nbProcesses = 16*nbNodes
         # filename .exe changes with compilation options
-        cmd = "/usr/users/st76i/st76i_14/iso3dfd-st7/bin/iso3dfd_dev13_cpu_"+Olevel + \
+        cmd = "/usr/users/st76i/st76i_"+str(user)+"/iso3dfd-st7/bin/iso3dfd_dev13_cpu_"+Olevel + \
             "_"+vectorExtension+".exe "+str(matSize)+" "+str(matSize)+" "+str(matSize) + \
                 " 32 100 "+str(x)+" "+str(y)+" "+str(z)
         print("Executed command: " + cmd)
@@ -65,6 +65,8 @@ parser.add_argument('-v', '--vector',
 parser.add_argument('-x','--block_x',type=int) #  block size that each node has to calculate
 parser.add_argument('-y','--block_y',type=int) #  block size that each node has to calculate
 parser.add_argument('-z','--block_z',type=int) #  block size that each node has to calculate
+parser.add_argument('-u','--user',type=int) #  block size that each node has to calculate
+
 
 args = parser.parse_args()
 
@@ -76,4 +78,4 @@ if args.matrix_size <= 0:
     sys.exit("Error: matrix size must be an integer greater than 0!")
 
 
-runSub(args.matrix_size,args.strategy,args.Olevel,args.vector,args.block_x,args.block_y,args.block_z)
+runSub(args.matrix_size,args.strategy,args.Olevel,args.vector,args.block_x,args.block_y,args.block_z,args.user)
