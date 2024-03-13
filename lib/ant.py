@@ -1,6 +1,11 @@
 from lib.param import *
-from lib.cost import *
+from lib.cost import cost_function
 
+#----------------------------------------------------------------
+# pheromono_mult - Coefficient responsible for pheromon deployment
+# solution - Dictionary containing values found for each parameter
+# points - Nb of Gflops obtained by the solution
+#----------------------------------------------------------------
 class Ant:
     def __init__(self):
         self.pheromon_mult = 1.0

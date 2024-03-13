@@ -27,7 +27,7 @@ def linear_redistribution(ants: List[Ant]):
 
     coeff = top
     for ant in ants:
-        ant.pheromon = abs(coeff)
+        ant.pheromon_mult = abs(coeff)
         coeff -= step
 
 # y = a / x
@@ -35,7 +35,7 @@ def quadatic_redistribution(ants: List[Ant]):
     top = 2.0
 
     for i in range(len(ants)):
-        ants[i] = top / (i+1)^2
+        ants[i].pheromon_mult = top / (i+1)^2
 
 
 def relu_redistribution(ants: List[Ant]):
