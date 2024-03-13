@@ -10,9 +10,8 @@ size = comm.Get_size()
 
 iter = 10
 
-colonny = Colony(rho=0.1, delta=0.1)
-
 if Me == 0:
+  colonny = Colony(rho=0.1, delta=0.1, N=8)
   # The list of words to distribute - ensure it's the same length as the number of processes
   for i in range(iter):
     solutions = colonny.run()
@@ -38,7 +37,7 @@ if Me == 0:
       results += results_i
     
     # Append the modified words together and print
-    print("Final string:")
+    print(results)
 else:
   # Other processes receive their word, add a trailing space, and send it back
   for i in range(iter):
