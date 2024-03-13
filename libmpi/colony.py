@@ -17,7 +17,7 @@ class Node:
             return
         index = self.chose_child()
         ant.add_solution(self.param, index)
-        self.children[index].explore_R(ant)
+        self.children[index].explore_by_ant(ant)
 
     def update_pheromon(self, rho, delta):
         # Part of the pheromon evaporate for every arc
