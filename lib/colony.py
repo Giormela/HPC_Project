@@ -1,4 +1,5 @@
 from lib.ant import * 
+from lib.redistribution import *
 import random
 
 PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
@@ -15,9 +16,9 @@ class Node:
         self.ants_cross.append(ant)
         if not self.param:
             return
-        index = self.chose_child()
+        index = self.choose_child()
         ant.add_solution(self.param, index)
-        self.children[index].explore_R(ant)
+        self.children[index].explored_by_ant(ant)
 
     def update_pheromon(self, rho, delta):
         # Part of the pheromon evaporate for every arc
@@ -31,7 +32,7 @@ class Node:
             self.probs[i] = self.pheromons[i] / sum(self.pheromons)
 
 
-    def chose_child(self) -> int:
+    def choose_child(self) -> int:
         return random.choices(range(self.param.domain_dim), weights=self.probs, k=1)[0]
 
     def clear(self):
@@ -81,13 +82,11 @@ class Colony:
             ant.rank_solution()
         ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
 
-        coeff = 2.0
-        step = 2.0 / self.N
-        for ant in ranked:
-            ant.pheromon = abs(coeff)
-            coeff -= step
-        
+        set_ants_mult(self.ants, RedistributionStrategy.Linear) 
+
         return ranked[0].solution
+    
+    
         
     
     def run(self):

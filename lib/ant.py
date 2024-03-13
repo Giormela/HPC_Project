@@ -3,7 +3,7 @@ from lib.cost import *
 
 class Ant:
     def __init__(self):
-        self.pheromon = 1.0
+        self.pheromon_mult = 1.0
         self.solution = {}
         self.points = 0.0
 
