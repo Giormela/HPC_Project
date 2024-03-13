@@ -103,6 +103,9 @@ class Colony:
             # Update pheromon and probability of each node
             self.update_nodes()
 
+    def get_ants(self):
+        return self.ants
+
 
     def print(self, list=None):
         if not list:
