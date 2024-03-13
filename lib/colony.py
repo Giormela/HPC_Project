@@ -1,5 +1,6 @@
 from lib.ant import * 
 from lib.redistribution import *
+from lib.exporter import dump_state
 import random
 
 PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
@@ -111,6 +112,8 @@ class Colony:
             self.rank_ants()
             # Update pheromon and probability of each node
             self.update_nodes()
+            # Dump solution for visualization
+            dump_state(i, [ant.get_solution() for ant in self.ants])
 
     def print(self, list=None):
         if not list:
