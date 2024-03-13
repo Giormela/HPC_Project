@@ -90,7 +90,7 @@ class Colony:
         return ranked[0].solution
         
     def get_solutions(self):
-        return [ant.solution for ant in self.ants]
+        return [ant.get_solution() for ant in self.ants]
     
     def run(self):
         for ant in self.ants:
