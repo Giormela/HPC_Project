@@ -1,0 +1,13 @@
+#slider-container {
+    position: fixed;  /* Fix the position relative to the viewport */
+    bottom: 10%;       /* Distance from the top of the viewport */
+    left: 50%;       /* Distance from the left side of the viewport */
+    transform: translateX(-50%); /* Adjust based on the container's width */
+    z-index: 1000;    /* Ensure it sits above other content */
+    width: 80%;     /* Adjust the width as needed */
+    background-color: white; /* Background color for visibility */
+    padding: 15px;    /* Some padding around the slider */
+    border: 1px solid #ddd;  /* A light border around the container */
+    border-radius: 5px; /* Optional: rounded corners */
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);  /* Optional: some shadow for depth */
+}
