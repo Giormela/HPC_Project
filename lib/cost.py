@@ -1,6 +1,7 @@
 import os
 import subprocess
 import re
+from lib.path import MAKEFILE_PATH
 
 def execute_binary(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size):
     filename = "iso3dfd_dev13_cpu_" + olevel + "_" + simd + ".exe"
@@ -14,7 +15,8 @@ def execute_binary(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_
     return res
 
 def execute_makefile(olevel="-O3", simd="avx2"):
-    os.chdir("/usr/users/st76i/st76i_1/iso3dfd-st7")
+    os.chdir(MAKEFILE_PATH)
+    #os.chdir("/usr/users/st76i/st76i_1/iso3dfd-st7")
     
     # Do not compile again if exe already exists
     if os.path.exists("bin/iso3dfd_dev13_cpu_" + olevel + "_" + simd + ".exe"):
