@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 # Path to your dataset directory, adjust as needed
-dataset_path = 'HPC_Project/Dashboard/main/datasets/'
+dataset_path = 'Dashboard/main/datasets/'
 
 # List all CSV files in the directory
 csv_files = glob.glob(dataset_path + '*.csv')
@@ -29,6 +29,7 @@ dims = ["opti_flag_id", "vecto_flag_id", "x_tbs", "y_tbs","z_tbs","n_threads","r
 
 
 df = pd.read_csv(dataset_path+'data1.csv')
+
 
 def prepare_data(df):
     # Define mappings
@@ -45,6 +46,8 @@ def prepare_data(df):
     # Insert 'Vecto_flag' at the desired position (4th position, so index=3)
     df.insert(3, 'Vecto_flag', df.pop('Vecto_flag'))
 
+    # Limit digit numbers
+    df['rank'] = df['rank'].round(3)  # Round to  decimal places before passing to AG Grid
 
 
     # Apply log2 transformation
@@ -101,13 +104,14 @@ parameters = ["Opti_flag", "Vecto_flag", "x_tbs", "y_tbs", "z_tbs", "n_threads"]
 
 slider_container = html.Div(
     children=[  # Enclose the children components in a list
-        html.Label("Select Dataset:"),
+        html.Label("Select iteration :"),
+        html.Div(style={'margin': '5px'}),
         dcc.Slider(
             id='dataset-slider',
             min=1,
             max=num_files,  # Use the dynamically determined number of files
             value=1,  # Default value
-            marks={i: f'Data {i}' for i in range(1, num_files + 1)},  # Ensure the range starts at 1 if your datasets are named starting from 1
+            marks={i: f'{i}' for i in range(1, num_files + 1)},  # Ensure the range starts at 1 if your datasets are named starting from 1
             step=1,
         ),
     ],
@@ -117,7 +121,7 @@ slider_container = html.Div(
 app.layout = dbc.Container([
     html.Div(style={'margin': '80px'}),
     dcc.Store(id='current-dataset'),
-    html.H2("Filtering a Datatable with Parallel Coordinates"),
+    html.H2("Filtering Ants Paths with Parallel Coordinates"),
     html.Div(style={'margin': '40px'}),
     dcc.Dropdown(
         id='colorscale-dropdown',
@@ -162,6 +166,7 @@ app.layout = dbc.Container([
     html.Div([
         dcc.Graph(id='bar-chart-n_threads')
     ]),
+    html.Div(style={'margin': '200px'}),
 ])
 
 
@@ -177,7 +182,7 @@ def load_dataset_from_slider(slider_value):
     """
     
     # Define the base path to your datasets and the filename pattern
-    base_path = "HPC_Project/Dashboard/main/datasets/"
+    base_path = dataset_path
     filename_pattern = "data{}.csv"
     
     # Construct the full filepath based on the slider value
@@ -289,6 +294,7 @@ def update_bar_charts(rowData):
         # For each parameter, generate a sorted bar chart based on 'rank'
         if param in dff:
             sorted_df = dff.sort_values(by=["rank", param])
+            sorted_df['rank_text'] = sorted_df['rank'].map('{:,.2f}'.format)
             fig = px.bar(sorted_df, x=param, y='rank', text='rank',color_discrete_sequence=['#005F60'])
             fig.update_traces(texttemplate='%{text}', textposition='outside')
             fig.update_layout(uniformtext_minsize=8)
