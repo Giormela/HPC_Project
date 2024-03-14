@@ -32,10 +32,10 @@ def linear_redistribution(ants: List[Ant]):
 
 # y = a / x
 def quadatic_redistribution(ants: List[Ant]):
-    top = 2.0
+    top = 10.0
 
     for i in range(len(ants)):
-        ants[i].pheromon_mult = top / (i+1)^2
+        ants[i].pheromon_mult = top / ((i+1)**2)
 
 
 def relu_redistribution(ants: List[Ant]):

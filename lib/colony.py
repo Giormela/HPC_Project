@@ -95,9 +95,9 @@ class Colony:
         for ant in self.ants:
             ant.rank_solution()
         # Sort ants according to Gflops
-        ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
+        self.ants = sorted(self.ants, key=lambda x: x.points, reverse=True)
         # Set ants' multiplier according to the rank position
-        set_ants_mult(self.ants, RedistributionStrategy.Linear) 
+        set_ants_mult(self.ants, RedistributionStrategy.Quadratic) 
     
 
     def run(self):
