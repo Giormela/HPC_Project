@@ -39,4 +39,8 @@ def quadatic_redistribution(ants: List[Ant]):
 
 
 def relu_redistribution(ants: List[Ant]):
-    return
+    top = 2.0
+    step = 2*top/(len(ants))
+
+    for i in range(len(ants)):
+        ants[i].pheromon_mult = max(top-step*i,0)
