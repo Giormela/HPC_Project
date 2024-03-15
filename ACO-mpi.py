@@ -22,7 +22,7 @@ if Me == 0:
     j = q + 1 if 0 < r else q
     for i in range(1, size):
       batch_size = q + 1 if i < r else q
-      comm.send(solutions[j:j+batch_size], dest=i)
+      comm.bsend(solutions[j:j+batch_size], dest=i)
       j += batch_size
 
     # Process 0's batch
@@ -46,4 +46,4 @@ else:
     results = []
     for i, solution in batch:
       results.append((i, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
-    comm.send(results, dest=0)
+    comm.ssend(results, dest=0)
