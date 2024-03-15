@@ -43,7 +43,6 @@ if Me == 0:
     colony.set_results(results)
     colony.rank_ants()
     colony.update_nodes()
-    #colony.export(i)
 else:
   # Other processes receive their word, add a trailing space, and send it back
   for i in range(iter):

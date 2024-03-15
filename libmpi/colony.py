@@ -76,6 +76,8 @@ class Colony:
         self.redistribution_strategy = redistribution_strategy
         self.ants = [Ant() for i in range(N)]
         self.root = Colony.create_nodes(params_to_explore)
+        self.best_solution = None
+        self.best_result = 0.0
 
     def update_nodes(self, node: Node=None):
         # Initali condition

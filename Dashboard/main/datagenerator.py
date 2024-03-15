@@ -39,7 +39,7 @@ df_constrained = pd.DataFrame({
 })
 
 # Save the DataFrame to a new CSV file
-constrained_file_path = f'datasets/data{num_files}.csv'
+constrained_file_path = f'data{num_files}.csv'
 df_constrained.to_csv(constrained_file_path, index=False)
 
 constrained_file_path, df_constrained.head()
