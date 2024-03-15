@@ -1,7 +1,7 @@
 from lib.colony import *
 from lib.path import *
 
-colony = Colony(N=20, rho=0.1, delta=0.1)
+colony = Colony(N=10, rho=0.1, delta=0.1, redistribution_strategy=RedistributionStrategy.Quadratic)
 
 colony.simulate(iter=10)
 
