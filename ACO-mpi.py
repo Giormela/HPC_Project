@@ -15,6 +15,7 @@ if Me == 0:
   # The list of words to distribute - ensure it's the same length as the number of processes
   for i in range(iter):
     print("Iteration: ", i)
+    print("Best solution: ", colonny.best_solution, "Best result: ", colonny.best_result)
     solutions = colonny.run()
 
     q = len(solutions) // size
