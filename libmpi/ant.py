@@ -1,11 +1,6 @@
-from lib.param import *
-from lib.cost import cost_function
+from libmpi.param import *
+from libmpi.cost import *
 
-#----------------------------------------------------------------
-# pheromono_mult - Coefficient responsible for pheromon deployment
-# solution - Dictionary containing values found for each parameter
-# points - Nb of Gflops obtained by the solution
-#----------------------------------------------------------------
 class Ant:
     def __init__(self):
         self.pheromon_mult = 1.0
@@ -17,10 +12,10 @@ class Ant:
         return str(sol)
     
     def get_solution(self):
-        return {param: self.get_param_solution(param) for param in PARAMS_DICT}
-        #for param in PARAMS_DICT:
-        #    res[param] = self.get_param_solution(param)
-        #return res
+        res = {}
+        for param in PARAMS_DICT:
+            res[param] = self.get_param_solution(param)
+        return res
 
     def rank_solution(self):
         olevel = self.get_param_solution("olevel")

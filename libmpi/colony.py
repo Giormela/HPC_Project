@@ -1,16 +1,8 @@
-from lib.ant import * 
-from lib.redistribution import *
-from lib.exporter import dump_state
+from libmpi.ant import * 
 import random
 
 PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
 
-#----------------------------------------------------------------
-# param - Parameter whose node model the choise
-# children - List of children nodes (one for each option of the choise)
-# probs - List of probability to get each child
-# pheromons - List of pheromon laid down to each child
-#----------------------------------------------------------------
 class Node:
     def __init__(self, param: Param = None):
         self.param = param
@@ -23,7 +15,7 @@ class Node:
         self.ants_cross.append(ant)
         if not self.param:
             return
-        index = self.choose_child()
+        index = self.chose_child()
         ant.add_solution(self.param, index)
         self.children[index].explored_by_ant(ant)
 
@@ -32,26 +24,20 @@ class Node:
         self.pheromons = [pheromon * (1.0 - rho) for pheromon in self.pheromons] 
         # Each arc receives a quantity of pheromon
         for i in range(self.param.domain_dim):
-            self.pheromons[i] += sum(ant.pheromon_mult * delta for ant in self.children[i].ants_cross)
-        
+            self.pheromons[i] += sum(ant.pheromon * delta for ant in self.children[i].ants_cross)
+
     def update_probability(self):
-        total = sum(self.pheromons)
-        self.probs = [pheromon / total  for pheromon in self.pheromons]
+        for i in range(self.param.domain_dim):
+            self.probs[i] = self.pheromons[i] / sum(self.pheromons)
 
 
-    def choose_child(self) -> int:
+    def chose_child(self) -> int:
         return random.choices(range(self.param.domain_dim), weights=self.probs, k=1)[0]
 
     def clear(self):
         self.ants_cross = []
 
-#----------------------------------------------------------------
-# N - Nb of ants
-# ants - List of ants
-# rho - Percentage of pheromon that will evaporate at each iteration
-# delta - Quantity of pheromon released by each ant (times the its multiplier)
-# root - Root of the tree which simulate the colony
-#----------------------------------------------------------------
+  
 class Colony:
     def create_nodes(params_to_explore) -> Node:  
         if not params_to_explore: 
@@ -72,7 +58,6 @@ class Colony:
         self.root = Colony.create_nodes(params_to_explore)
 
     def update_nodes(self, node: Node=None):
-        # Initali condition
         if not node:
             node = self.root
 
@@ -94,15 +79,23 @@ class Colony:
         # Evaluate the cost of each ant solution
         for ant in self.ants:
             ant.rank_solution()
-        # Sort ants according to Gflops
-        self.ants = sorted(self.ants, key=lambda x: x.points, reverse=True)
-        # Set ants' multiplier according to the rank position
-        set_ants_mult(self.ants, RedistributionStrategy.Quadratic) 
-    
+        ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
 
+        coeff = 2.0
+        step = 2.0 / self.N
+        for ant in ranked:
+            ant.pheromon = abs(coeff)
+            coeff -= step
+        
+        return ranked[0].solution
+        
+    def get_solutions(self):
+        return [ant.get_solution() for ant in self.ants]
+    
     def run(self):
         for ant in self.ants:
             self.root.explored_by_ant(ant)
+        return self.get_solutions()
 
     def simulate(self, iter):
         for i in range(iter):
@@ -112,8 +105,7 @@ class Colony:
             self.rank_ants()
             # Update pheromon and probability of each node
             self.update_nodes()
-            # Dump solution for visualization
-            dump_state(i, [ant.get_solution() for ant in self.ants])
+
 
     def print(self, list=None):
         if not list:
