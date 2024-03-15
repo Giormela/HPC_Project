@@ -2,6 +2,8 @@
 from mpi4py import MPI
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
+from libmpi.redistribution import RedistributionStrategy
+from libmpi.path import set_user_id
 
 
 comm = MPI.COMM_WORLD
@@ -11,10 +13,11 @@ print("Me: ", Me, "Size: ", size)
 iter = 50
 
 if Me == 0:
-  colonny = Colony(rho=0.1, delta=0.1, N=20)
+  set_user_id()
+  colony = Colony(rho=0.1, delta=0.1, N=3, redistribution_strategy=RedistributionStrategy.Quadratic)
   # The list of words to distribute - ensure it's the same length as the number of processes
   for i in range(iter):
-    solutions = colonny.run()
+    solutions = colony.run()
 
     q = len(solutions) // size
     r = len(solutions) % size
@@ -37,9 +40,10 @@ if Me == 0:
       results += results_i
     
     # Update the pheromons
-    colonny.set_results(results)
-    colonny.rank_ants()
-    colonny.update_nodes()
+    colony.set_results(results)
+    colony.rank_ants()
+    colony.update_nodes()
+    #colony.export(i)
 else:
   # Other processes receive their word, add a trailing space, and send it back
   for i in range(iter):

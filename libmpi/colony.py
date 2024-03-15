@@ -1,8 +1,16 @@
 from libmpi.ant import * 
+from libmpi.redistribution import RedistributionStrategy, set_ants_mult
+from libmpi.exporter import dump_state
 import random
 
 PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
 
+#----------------------------------------------------------------
+# param - Parameter whose node model the choise
+# children - List of children nodes (one for each option of the choise)
+# probs - List of probability to get each child
+# pheromons - List of pheromon laid down to each child
+#----------------------------------------------------------------
 class Node:
     def __init__(self, param: Param = None):
         self.param = param
@@ -15,7 +23,7 @@ class Node:
         self.ants_cross.append(ant)
         if not self.param:
             return
-        index = self.chose_child()
+        index = self.choose_child()
         ant.add_solution(self.param, index)
         self.children[index].explored_by_ant(ant)
 
@@ -25,19 +33,25 @@ class Node:
         # Each arc receives a quantity of pheromon
         for i in range(self.param.domain_dim):
             self.pheromons[i] += sum(ant.pheromon_mult * delta for ant in self.children[i].ants_cross)
-
+        
     def update_probability(self):
-        for i in range(self.param.domain_dim):
-            self.probs[i] = self.pheromons[i] / sum(self.pheromons)
+        total = sum(self.pheromons)
+        self.probs = [pheromon / total  for pheromon in self.pheromons]
 
 
-    def chose_child(self) -> int:
+    def choose_child(self) -> int:
         return random.choices(range(self.param.domain_dim), weights=self.probs, k=1)[0]
 
     def clear(self):
         self.ants_cross = []
 
-  
+#----------------------------------------------------------------
+# N - Nb of ants
+# ants - List of ants
+# rho - Percentage of pheromon that will evaporate at each iteration
+# delta - Quantity of pheromon released by each ant (times the its multiplier)
+# root - Root of the tree which simulate the colony
+#----------------------------------------------------------------
 class Colony:
     def create_nodes(params_to_explore) -> Node:  
         if not params_to_explore: 
@@ -50,14 +64,21 @@ class Colony:
         node.pheromons = [1.0 for i in range(param.domain_dim)]
         return node
 
-    def __init__(self, N=100, rho=0.1, delta=0.05, params_to_explore=PARAMS_TO_EXPLORE): 
+    def __init__(self, 
+                 N: int=100, 
+                 rho: float=0.1, 
+                 delta: float=0.05, 
+                 redistribution_strategy: RedistributionStrategy=RedistributionStrategy.Linear, 
+                 params_to_explore=PARAMS_TO_EXPLORE): 
         self.N = N
         self.rho = rho
         self.delta = delta
+        self.redistribution_strategy = redistribution_strategy
         self.ants = [Ant() for i in range(N)]
         self.root = Colony.create_nodes(params_to_explore)
 
     def update_nodes(self, node: Node=None):
+        # Initali condition
         if not node:
             node = self.root
 
@@ -76,14 +97,14 @@ class Colony:
             self.update_nodes(child)
 
     def rank_ants(self):
-        ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
-        coeff = 2.0
-        step = 2.0 / self.N
-        for ant in ranked:
-            ant.pheromon_mult = abs(coeff)
-            coeff -= step
-        print([ant.pheromon_mult for ant in ranked])
-        return ranked[0].solution
+        # Evaluate the cost of each ant solution
+        for ant in self.ants:
+            ant.rank_solution()
+        # Sort ants according to Gflops
+        self.ants = sorted(self.ants, key=lambda x: x.points, reverse=True)
+        # Set ants' multiplier according to the rank position
+        set_ants_mult(self.ants, self.redistribution_strategy) 
+    
         
     def get_solutions(self):
         return [(i, self.ants[i].get_solution()) for i in range(len(self.ants))]
@@ -91,21 +112,13 @@ class Colony:
     def set_results(self, results):
         for i, result in results:
             self.ants[i].points = result
+
+    def export(self, nb_iter: int):
+        dump_state(nb_iter, [ant.export_solution() for ant in self.ants])
+
     
     def run(self):
         for ant in self.ants:
             self.root.explored_by_ant(ant)
         return self.get_solutions()
-
-    def print(self, list=None):
-        if not list:
-            list = [self.root]
-        new_list = []
-        for node in list:
-            print(node.pheromons, node.probs, end="\t|\t")
-            new_list.extend(node.children)
-        print("\n")
-        if new_list:
-            self.print(new_list)
-
      
