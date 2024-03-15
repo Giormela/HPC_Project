@@ -76,9 +76,6 @@ class Colony:
             self.update_nodes(child)
 
     def rank_ants(self):
-        # Evaluate the cost of each ant solution
-        # for ant in self.ants:
-        #     ant.rank_solution()
         ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
         coeff = 2.0
         step = 2.0 / self.N
@@ -99,16 +96,6 @@ class Colony:
         for ant in self.ants:
             self.root.explored_by_ant(ant)
         return self.get_solutions()
-
-    def simulate(self, iter):
-        for i in range(iter):
-            # Let each ant explore the tree
-            self.run()
-            # Test solutions and define multiplier of each ant according to the rank achieved
-            self.rank_ants()
-            # Update pheromon and probability of each node
-            self.update_nodes()
-
 
     def print(self, list=None):
         if not list:
