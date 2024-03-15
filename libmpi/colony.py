@@ -56,6 +56,8 @@ class Colony:
         self.delta = delta
         self.ants = [Ant() for i in range(N)]
         self.root = Colony.create_nodes(params_to_explore)
+        self.best_solution = None
+        self.best_result = 0.0
 
     def update_nodes(self, node: Node=None):
         if not node:
@@ -80,9 +82,11 @@ class Colony:
         coeff = 2.0
         step = 2.0 / self.N
         for ant in ranked:
+            if ant.points > self.best_result:
+                self.best_result = ant.points
+                self.best_solution = ant.solution
             ant.pheromon_mult = abs(coeff)
             coeff -= step
-        print([ant.pheromon_mult for ant in ranked])
         return ranked[0].solution
         
     def get_solutions(self):

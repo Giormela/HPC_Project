@@ -40,6 +40,7 @@ if Me == 0:
     colonny.set_results(results)
     colonny.rank_ants()
     colonny.update_nodes()
+  print(colonny.best_solution, colonny.best_result)
 else:
   # Other processes receive their word, add a trailing space, and send it back
   for i in range(iter):
