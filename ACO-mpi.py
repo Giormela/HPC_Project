@@ -7,11 +7,11 @@ from libmpi.colony import Colony
 comm = MPI.COMM_WORLD
 Me = comm.Get_rank()
 size = comm.Get_size()
-
-iter = 10
+print("Me: ", Me, "Size: ", size)
+iter = 50
 
 if Me == 0:
-  colonny = Colony(rho=0.1, delta=0.1, N=8)
+  colonny = Colony(rho=0.1, delta=0.1, N=20)
   # The list of words to distribute - ensure it's the same length as the number of processes
   for i in range(iter):
     solutions = colonny.run()
