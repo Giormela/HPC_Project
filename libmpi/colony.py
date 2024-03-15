@@ -84,7 +84,7 @@ class Colony:
         coeff = 2.0
         step = 2.0 / self.N
         for ant in ranked:
-            ant.pheromon = abs(coeff)
+            ant.pheromon_mult = abs(coeff)
             coeff -= step
         
         return ranked[0].solution
