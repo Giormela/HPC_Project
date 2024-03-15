@@ -24,7 +24,7 @@ class Node:
         self.pheromons = [pheromon * (1.0 - rho) for pheromon in self.pheromons] 
         # Each arc receives a quantity of pheromon
         for i in range(self.param.domain_dim):
-            self.pheromons[i] += sum(ant.pheromon * delta for ant in self.children[i].ants_cross)
+            self.pheromons[i] += sum(ant.pheromon_mult * delta for ant in self.children[i].ants_cross)
 
     def update_probability(self):
         for i in range(self.param.domain_dim):
