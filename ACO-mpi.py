@@ -38,6 +38,7 @@ if Me == 0:
     
     # Update the pheromons
     colonny.set_results(results)
+    colonny.rank_ants()
     colonny.update_nodes()
 else:
   # Other processes receive their word, add a trailing space, and send it back

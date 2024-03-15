@@ -80,13 +80,12 @@ class Colony:
         # for ant in self.ants:
         #     ant.rank_solution()
         ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
-
         coeff = 2.0
         step = 2.0 / self.N
         for ant in ranked:
             ant.pheromon_mult = abs(coeff)
             coeff -= step
-        
+        print([ant.pheromon_mult for ant in ranked])
         return ranked[0].solution
         
     def get_solutions(self):
@@ -95,7 +94,6 @@ class Colony:
     def set_results(self, results):
         for i, result in results:
             self.ants[i].points = result
-        print([ant.points for ant in self.ants])
     
     def run(self):
         for ant in self.ants:
