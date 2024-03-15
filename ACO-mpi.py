@@ -37,7 +37,7 @@ if Me == 0:
       results += results_i
     
     # Update the pheromons
-    Colony.set_results(results)
+    colonny.set_results(results)
     colonny.update_nodes()
 else:
   # Other processes receive their word, add a trailing space, and send it back
