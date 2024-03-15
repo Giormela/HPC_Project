@@ -28,21 +28,22 @@ if Me == 0:
     # Process 0's batch
     results = []
     batch = solutions[:q + 1 if 0 < r else q]
-    for solution in batch:
-      results.append(cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"]))
+    for i, solution in batch:
+      results.append((i, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
     
     # Collect the modified word from each process
     for i in range(1, size):
       results_i = comm.recv(source=i)
       results += results_i
     
-    # Append the modified words together and print
-    print(results)
+    # Update the pheromons
+    Colony.set_results(results)
+    colonny.update_nodes()
 else:
   # Other processes receive their word, add a trailing space, and send it back
   for i in range(iter):
     batch = comm.recv(source=0)
     results = []
-    for solution in batch:
-      results.append(cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"]))
+    for i, solution in batch:
+      results.append((i, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
     comm.send(results, dest=0)

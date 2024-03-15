@@ -77,8 +77,8 @@ class Colony:
 
     def rank_ants(self):
         # Evaluate the cost of each ant solution
-        for ant in self.ants:
-            ant.rank_solution()
+        # for ant in self.ants:
+        #     ant.rank_solution()
         ranked = sorted(self.ants, key=lambda x: x.points, reverse=True)
 
         coeff = 2.0
@@ -90,7 +90,12 @@ class Colony:
         return ranked[0].solution
         
     def get_solutions(self):
-        return [ant.get_solution() for ant in self.ants]
+        return [(i, self.ants[i].get_solution()) for i in range(len(self.ants))]
+    
+    def set_results(self, results):
+        for i, result in results:
+            self.ants[i].points = result
+        print([ant.points for ant in self.ants])
     
     def run(self):
         for ant in self.ants:
