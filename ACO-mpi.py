@@ -1,4 +1,3 @@
-
 from mpi4py import MPI
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
