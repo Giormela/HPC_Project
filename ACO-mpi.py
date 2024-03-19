@@ -1,10 +1,10 @@
+import argparse
 import sys
 from mpi4py import MPI
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
 from libmpi.redistribution import RedistributionStrategy
 from libmpi.path import get_user_id_from_console, set_user_id
-
 
 if len(sys.argv) > 1:
   ASKING_USER_ID = True
@@ -22,11 +22,13 @@ print("Me: ", Me, "Size: ", size)
 
 if Me == 0:
   # Getting user id and sharing it to all the other processes
-  if ASKING_USER_ID:
-    user_id = get_user_id_from_console()
-    set_user_id(user_id)
-    for i in range(1, size):
-      comm.bsend(user_id, dest=i)  
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-u','--user',type=int, choices=range(1, 14))
+  args = parser.parse_args()
+  user_id = str(args.user)
+  set_user_id(user_id)
+  for i in range(1, size):
+    comm.bsend(user_id, dest=i)  
 
   colony = Colony(rho=0.1, delta=0.1, N=20, redistribution_strategy=RedistributionStrategy.Quadratic)
   # The list of words to distribute - ensure it's the same length as the number of processes
