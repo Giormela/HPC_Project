@@ -30,6 +30,7 @@ if Me == 0:
   colony = Colony(rho=0.1, delta=0.1, N=20, redistribution_strategy=RedistributionStrategy.Quadratic)
   # The list of words to distribute - ensure it's the same length as the number of processes
   for i in range(ITER):
+    print(f"Iteration {i}")
     solutions = colony.run()
 
     q = len(solutions) // size
