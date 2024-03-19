@@ -19,7 +19,9 @@ echo "============= TITLE OF MY BATCH ================="
 # Command to execute
 # ex : 8 processes distributed on 2 nodes: 2 per socket (i.e. 4 per node)
 
-/usr/bin/mpirun -np 8 -map-by ppr:1:node:PE=16 -rank-by core python3 ACO-mpi.py
+# --user [your user number]
+# --distribution n : 1 for Linear, 2 for Quadratic, 3 for ReLU
+/usr/bin/mpirun -np 8 -map-by ppr:1:node:PE=16 -rank-by core python3 ACO-mpi.py --user 9 --method 2
 
 # ex to test 4 processes on one node (no communications)
 #/usr/bin/mpirun -np 4 -map-by ppr:1:core:PE=1 -rank-by core python3 myappli.py args_of_my_appli

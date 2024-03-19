@@ -9,8 +9,6 @@ def execute_binary(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_
         " " + n1 + " " + n2 + " " + n3 + \
         " " + num_threads + " " + num_reps + \
         " " + n1_size + " " + n2_size + " " + n3_size
-    print("The execution will be done through:")
-    print("\t"+cmd)
     res = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
     return res
 
