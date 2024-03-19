@@ -10,9 +10,6 @@ def find_logs_path(path):
             return os.path.join(root, "datasets")
     return None
 
-def get_user_id_from_console() -> int:
-    return input("Digit your user code: ")
-
 def set_user_id(id: int):
     print("settin to ", id)
     global USER_ID
