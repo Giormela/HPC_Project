@@ -11,7 +11,6 @@ def find_logs_path(path):
     return None
 
 def set_user_id(id: int):
-    print("settin to ", id)
     global USER_ID
     global MAKEFILE_PATH
     global LOGS_PATH

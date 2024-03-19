@@ -6,18 +6,12 @@ from libmpi.colony import Colony
 from libmpi.redistribution import RedistributionStrategy
 from libmpi.path import get_user_id_from_console, set_user_id
 
-if len(sys.argv) > 1:
-  ASKING_USER_ID = True
-
 ITER = 50
 
 comm = MPI.COMM_WORLD
 Me = comm.Get_rank()
 size = comm.Get_size()
 print("Me: ", Me, "Size: ", size)
-
-
-
 
 
 if Me == 0:
