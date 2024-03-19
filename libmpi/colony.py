@@ -102,6 +102,10 @@ class Colony:
         # Evaluate the cost of each ant solution
         for ant in self.ants:
             ant.rank_solution()
+            if ant.points > self.best_result:
+                self.best_result = ant.points
+                self.best_solution = ant.get_solution()
+                print(f"New best solution: {self.best_solution} with {self.best_result} Gflops")
         # Sort ants according to Gflops
         self.ants = sorted(self.ants, key=lambda x: x.points, reverse=True)
         # Set ants' multiplier according to the rank position
