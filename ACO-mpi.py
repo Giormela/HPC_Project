@@ -3,20 +3,26 @@ from mpi4py import MPI
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
 from libmpi.redistribution import RedistributionStrategy
-from libmpi.path import set_user_id
+from libmpi.path import get_user_id_from_console, set_user_id
 
+ITER = 50
 
 comm = MPI.COMM_WORLD
 Me = comm.Get_rank()
 size = comm.Get_size()
 print("Me: ", Me, "Size: ", size)
-iter = 50
+
 
 if Me == 0:
-  set_user_id()
-  colony = Colony(rho=0.1, delta=0.1, N=3, redistribution_strategy=RedistributionStrategy.Quadratic)
+  # Getting user id and sharing it to all the other processes
+  user_id = get_user_id_from_console()
+  set_user_id(user_id)
+  for i in range(1, size):
+    comm.bsend(user_id, dest=i)  
+  
+  colony = Colony(rho=0.1, delta=0.1, N=20, redistribution_strategy=RedistributionStrategy.Quadratic)
   # The list of words to distribute - ensure it's the same length as the number of processes
-  for i in range(iter):
+  for i in range(ITER):
     solutions = colony.run()
 
     q = len(solutions) // size
@@ -44,8 +50,12 @@ if Me == 0:
     colony.rank_ants()
     colony.update_nodes()
 else:
+  # Setting user id from getting it from master 
+  user_id = comm.recv(source=0)
+  set_user_id(user_id)
+
   # Other processes receive their word, add a trailing space, and send it back
-  for i in range(iter):
+  for i in range(ITER):
     batch = comm.recv(source=0)
     results = []
     for i, solution in batch:
