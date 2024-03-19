@@ -1,8 +1,13 @@
+import sys
 from mpi4py import MPI
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
 from libmpi.redistribution import RedistributionStrategy
 from libmpi.path import get_user_id_from_console, set_user_id
+
+
+if len(sys.argv) > 1:
+  ASKING_USER_ID = True
 
 ITER = 50
 
@@ -12,13 +17,17 @@ size = comm.Get_size()
 print("Me: ", Me, "Size: ", size)
 
 
+
+
+
 if Me == 0:
   # Getting user id and sharing it to all the other processes
-  user_id = get_user_id_from_console()
-  set_user_id(user_id)
-  for i in range(1, size):
-    comm.bsend(user_id, dest=i)  
-  
+  if ASKING_USER_ID:
+    user_id = get_user_id_from_console()
+    set_user_id(user_id)
+    for i in range(1, size):
+      comm.bsend(user_id, dest=i)  
+
   colony = Colony(rho=0.1, delta=0.1, N=20, redistribution_strategy=RedistributionStrategy.Quadratic)
   # The list of words to distribute - ensure it's the same length as the number of processes
   for i in range(ITER):
@@ -50,8 +59,9 @@ if Me == 0:
     colony.update_nodes()
 else:
   # Setting user id from getting it from master 
-  user_id = comm.recv(source=0)
-  set_user_id(user_id)
+  if ASKING_USER_ID:
+    user_id = comm.recv(source=0)
+    set_user_id(user_id)  
 
   # Other processes receive their word, add a trailing space, and send it back
   for i in range(ITER):
