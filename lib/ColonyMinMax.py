@@ -1,3 +1,4 @@
+import sys
 from lib.colony import Colony
 from lib.colony import Node
 from lib.colony import PARAMS_TO_EXPLORE
@@ -10,19 +11,22 @@ class NodeMinMax(Node):
 
 
     def update_pheromon(self, rho, delta):
-        min = self.colony.getMin()
-        max = self.colony.getMax()
+        
         # Part of the pheromon evaporate for every arc
         self.pheromons = [pheromon * (1.0 - rho) for pheromon in self.pheromons]
+        
+        # Each arc receives a quantity of pheromon
+        for i in range(self.param.domain_dim):
+            self.pheromons[i] += sum(ant.pheromon_mult * delta for ant in self.children[i].ants_cross)
+
+        min = self.colony.getMin()
+        max = self.colony.getMax()
         if self.pheromons < min:
             self.pheromons = min
         if self.pheromons > max:
             self.pheromons = max
 
-        # Each arc receives a quantity of pheromon
-        for i in range(self.param.domain_dim):
-            self.pheromons[i] += sum(ant.pheromon_mult * delta for ant in self.children[i].ants_cross)
-     
+    
 
 class ColonyMinMax(Colony):
     def create_nodes(self, params_to_explore) -> Node:

@@ -4,7 +4,7 @@ from mpi4py import MPI
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
 from libmpi.redistribution import RedistributionStrategy
-from libmpi.path import get_user_id_from_console, set_user_id
+from libmpi.path import set_user_id
 
 ITER = 50
 
@@ -20,7 +20,7 @@ if Me == 0:
   parser.add_argument('-u','--user',type=int, choices=range(1, 14))
   parser.add_argument('-m','--method',type=int, choices=range(1, 4))
   args = parser.parse_args()
-  user_id = str(args.user) if args.user else 1
+  user_id = int(args.user) if args.user else 1
   method = args.method if args.method else 1
   # Set and sharing user id 
   set_user_id(user_id)
@@ -58,9 +58,8 @@ if Me == 0:
     colony.update_nodes()
 else:
   # Setting user id from getting it from master 
-  if ASKING_USER_ID:
-    user_id = comm.recv(source=0)
-    set_user_id(user_id)  
+  user_id = comm.recv(source=0)
+  set_user_id(user_id)  
 
   # Other processes receive their word, add a trailing space, and send it back
   for i in range(ITER):
