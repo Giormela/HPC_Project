@@ -68,7 +68,6 @@ for i in range(ITER):
   
   if Me == 0:
     results = [item for sublist in results for item in sublist]
-    print("Results: ", results)
     colony.set_results(results)
     colony.rank_ants()
     colony.update_nodes()
