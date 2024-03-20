@@ -17,7 +17,7 @@ print("Me: ", Me, "Size: ", size)
 if Me == 0:
   # Getting user id and sharing it to all the other processes
   parser = argparse.ArgumentParser()
-  parser.add_argument('-u','--user',type=int, choices=range(1, 14))
+  parser.add_argument('-u','--user',type=int, choices=range(1, 16))
   parser.add_argument('-m','--method',type=int, choices=range(1, 4))
   args = parser.parse_args()
   user_id = int(args.user) if args.user else 1
