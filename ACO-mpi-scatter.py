@@ -45,7 +45,7 @@ if Me == 0:
   # Set and sharing user id 
   set_user_id(user_id)
 
-  colony = Colony(rho, delta, N, redistribution_strategy)
+  colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 else:
   # Setting user id 
   set_user_id(user_id)
