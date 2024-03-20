@@ -51,16 +51,25 @@ else:
   set_user_id(user_id)
 
 for i in range(ITER):
+  
   solutions = None
-  # counts = None
-  # displacements = None
-  # batchSize = N // size + 1 if i < (N % size) else N // size + 1
-  # batch = np.empty(batchSize, dtype=np.int*dict)
   if Me == 0:
     print(f"Iteration {i}")
     solutions = colony.run()
-    # counts = [N // size + 1 if i < (N % size) else N // size for i in range(size)]
-    # displacements = [sum(counts[:i]) for i in range(size)]
+    solutions = [[solutions[j] for j in range(i, len(solutions), size)] for i in range(size)]
+  
   batch = comm.scatter(solutions, root=0)
-  print(f"Me: {Me} Batch: {batch}")
+  
   results = []
+  for s, solution in batch:
+    results.append((s, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
+  
+  results = comm.gather(results, root=0)
+  
+  if Me == 0:
+    results = [item for sublist in results for item in sublist]
+    print("Results: ", results)
+    colony.set_results(results)
+    colony.rank_ants()
+    colony.update_nodes()
+    colony.export(i)
