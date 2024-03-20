@@ -8,7 +8,7 @@ def find_logs_path(path):
     for root, directories, files in os.walk(path):
         if "datasets" in directories:
             return os.path.join(root, "datasets")
-    return None
+    raise ValueError("Problem in building paths: probably the user id equal to", USER_ID, "is wrong.")
 
 def set_user_id(id: int):
     global USER_ID
