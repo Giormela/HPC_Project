@@ -17,8 +17,14 @@ class Ant:
         return res
     
     def export_solution(self):
-        res = {tuple[0]: tuple[1].get_index_from_value(self.get_param_solution(tuple[0])) for tuple in PARAMS_DICT.items()}
+        # Treat differently olevel and simd
+        olevel = PARAMS_DICT["olevel"].get_index_from_value(self.get_param_solution("olevel"))
+        simd = PARAMS_DICT["simd"].get_index_from_value(self.get_param_solution("simd"))
+        
+        res = {tuple[0]: self.get_param_solution(tuple[0]) for tuple in PARAMS_DICT.items()}
         res["gflops"] = self.points
+        res["olevel"] = olevel
+        res["simd"] = simd
         return res
 
     def rank_solution(self):

@@ -101,7 +101,6 @@ class Colony:
     def rank_ants(self):
         # Evaluate the cost of each ant solution
         for ant in self.ants:
-            ant.rank_solution()
             if ant.points > self.best_result:
                 self.best_result = ant.points
                 self.best_solution = ant.get_solution()

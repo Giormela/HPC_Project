@@ -27,7 +27,7 @@ if Me == 0:
   for i in range(1, size):
     comm.bsend(user_id, dest=i)  
 
-  colony = Colony(rho=0.1, delta=0.1, N=20, redistribution_strategy=RedistributionStrategy.Quadratic)
+  colony = Colony(rho=0.1, delta=0.1, N=5, redistribution_strategy=RedistributionStrategy.Quadratic)
   # The list of words to distribute - ensure it's the same length as the number of processes
   for i in range(ITER):
     print(f"Iteration {i}")
@@ -37,26 +37,27 @@ if Me == 0:
     r = len(solutions) % size
     # Send each word to each process, including itself
     j = q + 1 if 0 < r else q
-    for i in range(1, size):
-      batch_size = q + 1 if i < r else q
-      comm.bsend(solutions[j:j+batch_size], dest=i)
+    for p in range(1, size):
+      batch_size = q + 1 if p < r else q
+      comm.bsend(solutions[j:j+batch_size], dest=p)
       j += batch_size
 
     # Process 0's batch
     results = []
     batch = solutions[:q + 1 if 0 < r else q]
-    for i, solution in batch:
-      results.append((i, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
+    for s, solution in batch:
+      results.append((s, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
     
     # Collect the modified word from each process
-    for i in range(1, size):
-      results_i = comm.recv(source=i)
+    for p in range(1, size):
+      results_i = comm.recv(source=p)
       results += results_i
     
     # Update the pheromons
     colony.set_results(results)
     colony.rank_ants()
     colony.update_nodes()
+    colony.export(i)
 else:
   # Setting user id from getting it from master 
   user_id = comm.recv(source=0)
