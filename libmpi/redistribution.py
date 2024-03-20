@@ -11,12 +11,11 @@ class RedistributionStrategy(Enum):
 def set_ants_mult(ants: List[Ant], strategy=RedistributionStrategy.Linear):
     fun = None
 
-    match strategy:
-        case RedistributionStrategy.Linear:
+    if strategy == RedistributionStrategy.Linear:
             fun = linear_redistribution
-        case RedistributionStrategy.Quadratic:
+    elif strategy == RedistributionStrategy.Quadratic:
             fun = quadatic_redistribution
-        case RedistributionStrategy.Relu:
+    elif strategy == RedistributionStrategy.Relu:
             fun = relu_redistribution
 
     fun(ants)
