@@ -1,13 +1,6 @@
 from typing import Dict, List
-from libmpi.path import LOGS_PATH
+from libmpi.path import get_logs_path
 import csv
-import os
-
-def find_logs_path(path):
-    for root, directories, files in os.walk(path):
-        if "datasets" in directories:
-            return os.path.join(root, "datasets")
-    return None
 
 CONV_DICT = {"olevel": "opti_flag_id", 
              "simd": "vecto_flag_id",
@@ -20,8 +13,7 @@ CONV_DICT = {"olevel": "opti_flag_id",
 
 def dump_state(nb_iter, solutions: List[Dict[str, str]]):
     solutions = convert_labels(solutions)
-    print("Logs file: ", LOGS_PATH)
-    filename = LOGS_PATH + "/data" + str(nb_iter) + ".csv"
+    filename = get_logs_path() + "/data" + str(nb_iter) + ".csv"
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=solutions[0].keys())
         writer.writeheader()
