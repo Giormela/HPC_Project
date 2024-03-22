@@ -6,6 +6,9 @@ LOGS_PATH = ""
 REPOSITORY_PATH = ""
 
 def find_logs_path(path):
+    print(path)
+    if not os.path.exists(path):
+        os.mkdir(path)
     for root, directories, files in os.walk(path):
         if "datasets" in directories:
             return os.path.join(root, "datasets")
@@ -25,7 +28,10 @@ def set_user_id(id: int):
     USER_ID = id
     REPOSITORY_PATH = os.getcwd()
     MAKEFILE_PATH = find_makefile_path("/usr/users/st76i/st76i_"+str(USER_ID))
-    LOGS_PATH = REPOSITORY_PATH + "/Dashboard/main/datasets"
+    path = "/Dashboard/main/datasets"
+    if not os.path.exists("."+path):
+        os.makedirs("."+path)
+    LOGS_PATH = REPOSITORY_PATH + path
 
 def get_makefile_path() -> str:
     return MAKEFILE_PATH
