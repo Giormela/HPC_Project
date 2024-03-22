@@ -2,6 +2,7 @@ from ast import List
 from libmpi.ant import * 
 from libmpi.redistribution import RedistributionStrategy, set_ants_mult
 from libmpi.exporter import dump_state
+from copy import deepcopy
 import random
 
 PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
@@ -111,16 +112,22 @@ class Colony:
             self.update_nodes(child)
 
     def rank_ants(self):
+        iter_best_result = 0.0
+        iter_best_solution = None
         # Evaluate the cost of each ant solution
         for ant in self.ants:
+            if ant.points > iter_best_result:
+                iter_best_result = ant.points
+                iter_best_solution = deepcopy(ant.get_solution())
             if ant.points > self.best_result:
                 self.best_result = ant.points
-                self.best_solution = ant.get_solution()
-                print(f"New best solution: {self.best_solution} with {self.best_result} Gflops")
+                self.best_solution = deepcopy(ant.get_solution())
+                # print(f"New best solution: {self.best_solution} with {self.best_result} Gflops")
         # Sort ants according to Gflops
         self.ants = sorted(self.ants, key=lambda x: x.points, reverse=True)
         # Set ants' multiplier according to the rank position
-        set_ants_mult(self.ants, self.redistribution_strategy) 
+        set_ants_mult(self.ants, self.redistribution_strategy)
+        return iter_best_solution, iter_best_result 
     
         
     def get_solutions(self):

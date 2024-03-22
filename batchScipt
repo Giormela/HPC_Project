@@ -14,7 +14,7 @@ module load py-mpi4py/3.1.4/gcc-12.3.0-openmpi
 cd ~/HPC_Project
 
 
-echo "============= TITLE OF MY BATCH ================="
+echo "========== MPI LAUNCHER for iso3d to use with sbatch =========="
 
 # Command to execute
 # ex : 8 processes distributed on 2 nodes: 2 per socket (i.e. 4 per node)
@@ -42,24 +42,25 @@ while getopts 'n:u:m:i:a:d:r' flag; do
         r) rho="${OPTARG}" ;;
     esac
 done
-echo $numberProcess
+echo $rho
+echo $delta
 if ! [[ "$numberProcess" =~ ^[1-8]+$ ]]; then
     echo "Error: Argument numberProcess is not between 1 and 8"
     exit 128
 fi
 if ! [[ "$user" =~ ^[1-9]+$ ]]; then
-    echo "Error: Argument user is not a number"
+    echo "Error: Argument user is not a number from 1-9"
     exit 128
 fi
 if ! [[ "$method" =~ ^[1-9]+$ ]]; then
-    echo "Error: Argument method is not a number"
+    echo "Error: Argument method is not a number from 1-9"
     exit 128
 fi
-if ! [[ "$iter" =~ ^[1-9]+$ ]]; then
+if ! [[ "$iter" =~ ^[0-9]+$ ]]; then
     echo "Error: Argument iter is not a number"
     exit 128
 fi
-if ! [[ "$ants" =~ ^[1-9]+$ ]]; then
+if ! [[ "$ants" =~ ^[0-9]+$ ]]; then
     echo "Error: Argument ants is not a number"
     exit 128
 fi
@@ -67,7 +68,7 @@ fi
 echo "===================== MPIRUN ======================="
 # --user [your user number]
 # --distribution n : 1 for Linear, 2 for Quadratic, 3 for ReLU
-/usr/bin/mpirun -np $numberProcess -map-by ppr:1:node:PE=16 -rank-by core python3 ACO-mpi-scatter.py --user $user --method $method --iter $iter --nbants $ants --delta $delta --rho $rho
+/usr/bin/mpirun -np $numberProcess -map-by ppr:1:node:PE=16 -rank-by core python3 ACO-mpi-scatter.py --user $user --method $method --iter $iter --nbants $ants --delta 0.1 --rho 0.1
 # ex to test 4 processes on one node (no communications)
 #/usr/bin/mpirun -np 4 -map-by ppr:1:core:PE=1 -rank-by core python3 myappli.py args_of_my_appli
 
