@@ -61,7 +61,7 @@ for i in range(ITER):
   solutions = None
   
   if Me == 0:
-    print(f"Iteration {i}")
+    print(f"------------------- Iteration {i} -------------------")
     solutions = colony.run()
     solutions = [[solutions[j] for j in range(i, len(solutions), size)] for i in range(size)]
   
@@ -72,11 +72,14 @@ for i in range(ITER):
   for s, solution in batch:
     results.append((s, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
   
-  results += comm.gather(results, root=0)
+  results = comm.gather(results, root=0)
   
   if Me == 0:
     results = [item for sublist in results for item in sublist]
     colony.set_results(results)
-    colony.rank_ants()
+    iter_best_solution, iter_best_result = colony.rank_ants()
     colony.update_nodes()
     colony.export(i)
+    print(f"Iteration {i} best solution: {iter_best_solution} with {iter_best_result} Gflops")
+    print()
+    print(f"Overall best solution: {colony.best_solution} with {colony.best_result} Gflops")
