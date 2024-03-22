@@ -6,9 +6,6 @@ LOGS_PATH = ""
 REPOSITORY_PATH = ""
 
 def find_logs_path(path):
-    print(path)
-    if not os.path.exists(path):
-        os.mkdir(path)
     for root, directories, files in os.walk(path):
         if "datasets" in directories:
             return os.path.join(root, "datasets")
