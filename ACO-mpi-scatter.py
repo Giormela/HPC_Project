@@ -81,4 +81,5 @@ for i in range(ITER):
     colony.update_nodes()
     colony.export(i)
     print(f"Iteration {i} best solution: {iter_best_solution} with {iter_best_result} Gflops")
+    print()
     print(f"Overall best solution: {colony.best_solution} with {colony.best_result} Gflops")
