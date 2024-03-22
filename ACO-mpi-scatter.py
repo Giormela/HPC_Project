@@ -94,5 +94,4 @@ for i in range(ITER):
     print()
     print(f"Number of cost function calls: {(i+1)*N}")
     print(f"Total Execution time: {round(colony.execution_time,2)} s")
-    print(f"Total execution time x number of cores: {round(colony.execution_time*size*16, 2)}")
     print()
