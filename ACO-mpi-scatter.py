@@ -85,6 +85,6 @@ for i in range(ITER):
     print(f"Overall best solution: {colony.best_solution} with {colony.best_result} Gflops")
     print()
     print(f"Number of cost function calls: {(i+1)*N}")
-    print(f"Total Execution time: {colony.execution_time} s")
-    print(f"Total execution time x number of cores: {colony.execution_time*size*16}")
+    print(f"Total Execution time: {round(colony.execution_time,2)} s")
+    print(f"Total execution time x number of cores: {round(colony.execution_time*size*16, 2)}")
     print()
