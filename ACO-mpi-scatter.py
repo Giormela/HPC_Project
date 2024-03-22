@@ -72,7 +72,7 @@ for i in range(ITER):
   for s, solution in batch:
     results.append((s, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
   
-  results += comm.gather(results, root=0)
+  results = comm.gather(results, root=0)
   
   if Me == 0:
     results = [item for sublist in results for item in sublist]
