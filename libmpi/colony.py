@@ -1,3 +1,4 @@
+from ast import List
 from libmpi.ant import * 
 from libmpi.redistribution import RedistributionStrategy, set_ants_mult
 from libmpi.exporter import dump_state
@@ -88,6 +89,7 @@ class Colony:
         self.root = Colony.create_nodes(params_to_explore)
         self.best_solution = None
         self.best_result = 0.0
+        self.execution_time = 0.0
 
     def update_nodes(self, node: Node=None):
         # Initali condition
@@ -126,7 +128,8 @@ class Colony:
     
     def set_results(self, results):
         for i, result in results:
-            self.ants[i].points = result
+            self.ants[i].points = result[0]
+            self.execution_time += result[1]
 
     def export(self, nb_iter: int):
         dump_state(nb_iter, [ant.export_solution() for ant in self.ants])

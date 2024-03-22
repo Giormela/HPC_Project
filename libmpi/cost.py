@@ -24,12 +24,16 @@ def execute_makefile(olevel="-O3", simd="avx2"):
           " last > dump.txt"
     os.system(cmd)
 
-def find_cost(res) -> float:
-    pattern = "(\d+.\d+) GFlops"
-    find = re.search(pattern, str(res))
-    return float(find.group()[:-7]) if find else 0.0
+def find_cost(res):
+    pattern_gflops = "(\d+.\d+) GFlops"
+    pattern_time= "(\d+.\d+) sec"
+    find_gflops = re.search(pattern_gflops, str(res))
+    find_time = re.search(pattern_time, str(res))
+    gflops = float(find_gflops.group()[:-7]) if find_gflops else 0.0
+    time = float(find_time.group()[:-4]) if find_time else 0.0
+    return (gflops, time)
 
-def cost_function(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size) -> float:
+def cost_function(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size):
     execute_makefile(olevel, simd)
     res = execute_binary(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size)
     return find_cost(res)

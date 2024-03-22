@@ -16,7 +16,6 @@ def set_user_id(id: int):
     global LOGS_PATH
     USER_ID = id
     MAKEFILE_PATH = "/usr/users/st76i/st76i_"+str(USER_ID)+"/iso3dfd-st7"
-    print(MAKEFILE_PATH)
     LOGS_PATH = find_logs_path("/usr/users/st76i/st76i_"+str(USER_ID))
 
 def get_makefile_path() -> str:

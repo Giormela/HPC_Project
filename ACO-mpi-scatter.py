@@ -48,18 +48,19 @@ if Me == 0:
   else:
     redistribution_strategy = RedistributionStrategy.Relu
   # Set and sharing user id 
-  set_user_id(user_id)
 
-if min != 0 or max != np.inf:
-  colony = ColonyMinMax(min=min, max=max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
-else:
-  colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
+  if min != 0 or max != np.inf:
+    colony = ColonyMinMax(min=min, max=max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
+  else:
+    colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 
+set_user_id(user_id)
 for i in range(ITER):
   
   solutions = None
   if Me == 0:
     print(f"Iteration {i}")
+    print("time accumulated", colony.execution_time)
     solutions = colony.run()
     solutions = [[solutions[j] for j in range(i, len(solutions), size)] for i in range(size)]
   
