@@ -14,7 +14,7 @@ size = comm.Get_size()
 print("Me: ", Me, "Size: ", size)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-u','--user',type=int, choices=range(1, 14))
+parser.add_argument('-u','--user',type=int, choices=range(1, 15))
 parser.add_argument('-m','--method',type=int, choices=range(1, 4))
 parser.add_argument('-i','--iter',type=int)
 parser.add_argument('-n','--nbants',type=int)

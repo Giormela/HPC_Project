@@ -26,14 +26,20 @@ echo "============= TITLE OF MY BATCH ================="
 numberProcess=-1
 user=-1
 method=-1
-debug=false
+iter=-1
+ants=-1
+delta=-1
+rho=-1
 
-while getopts 'n:u:m:d' flag; do
+while getopts 'n:u:m:i:a:d:r' flag; do
     case "${flag}" in
         n) numberProcess="${OPTARG}" ;;
         u) user="${OPTARG}" ;;
         m) method="${OPTARG}" ;;
-        d) debug='true' ;;
+        i) iter="${OPTARG}" ;;
+        a) ants="${OPTARG}" ;;
+        d) delta="${OPTARG}" ;;
+        r) rho="${OPTARG}" ;;
     esac
 done
 echo $numberProcess
@@ -49,15 +55,22 @@ if ! [[ "$method" =~ ^[1-9]+$ ]]; then
     echo "Error: Argument method is not a number"
     exit 128
 fi
-echo "$debug"
-if ! $debug; then
+if ! [[ "$iter" =~ ^[1-9]+$ ]]; then
+    echo "Error: Argument iter is not a number"
+    exit 128
+fi
+if ! [[ "$ants" =~ ^[1-9]+$ ]]; then
+    echo "Error: Argument ants is not a number"
+    exit 128
+fi
+
 echo "===================== MPIRUN ======================="
 # --user [your user number]
 # --distribution n : 1 for Linear, 2 for Quadratic, 3 for ReLU
-/usr/bin/mpirun -np $numberProcess -map-by ppr:1:node:PE=16 -rank-by core python3 ACO-mpi.py --user $user --method $method
+/usr/bin/mpirun -np $numberProcess -map-by ppr:1:node:PE=16 -rank-by core python3 ACO-mpi-scatter.py --user $user --method $method --iter $iter --nbants $ants --delta $delta --rho $rho
 # ex to test 4 processes on one node (no communications)
 #/usr/bin/mpirun -np 4 -map-by ppr:1:core:PE=1 -rank-by core python3 myappli.py args_of_my_appli
-fi
+
 
 echo "===================== END ======================="
 
