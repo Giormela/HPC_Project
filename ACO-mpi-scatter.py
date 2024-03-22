@@ -80,3 +80,4 @@ for i in range(ITER):
     colony.rank_ants()
     colony.update_nodes()
     colony.export(i)
+    print(f"New best solution: {colony.best_solution} with {colony.best_result} Gflops")
