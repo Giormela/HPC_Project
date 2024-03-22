@@ -30,14 +30,24 @@ class Node:
     def update_pheromon(self, rho, delta):
         # Part of the pheromon evaporate for every arc
         self.pheromons = [pheromon * (1.0 - rho) for pheromon in self.pheromons] 
-        # Each arc receives a quantity of pheromon
-        for i in range(self.param.domain_dim):
-            self.pheromons[i] += sum(ant.pheromon_mult * delta for ant in self.children[i].ants_cross)
         
+        for i in range(self.param.domain_dim):
+            # Acoording to the delta and the ants' multiplier each edge is eligible for a certain quantity of pheromon
+            pheromon_to_add = sum(ant.pheromon_mult * delta for ant in self.children[i].ants_cross)
+            # If the parameter supports the spread function use it
+            if self.param.spread:
+                self.pheromons[i] += 0.8 * pheromon_to_add
+                if i-1 >= 0:
+                    self.pheromons[i-1] += 0.1 * pheromon_to_add
+                if i+1 < self.param.domain_dim:
+                    self.pheromons[i+1] += 0.1 * pheromon_to_add
+            # Otherwise add simply the pheromon
+            else:
+                self.pheromons[i] += pheromon_to_add
+                
     def update_probability(self):
         total = sum(self.pheromons)
         self.probs = [pheromon / total  for pheromon in self.pheromons]
-
 
     def choose_child(self) -> int:
         return random.choices(range(self.param.domain_dim), weights=self.probs, k=1)[0]
