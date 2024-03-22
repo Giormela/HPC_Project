@@ -1,4 +1,5 @@
 import argparse
+import subprocess
 import sys
 from mpi4py import MPI
 import numpy as np
@@ -15,22 +16,29 @@ Me = comm.Get_rank()
 size = comm.Get_size()
 
 # Define the shell arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('-u','--user',type=int, choices=range(1, 15))
-parser.add_argument('-m','--method',type=int, choices=range(1, 4))
-parser.add_argument('-i','--iter',type=int)
-parser.add_argument('-n','--nbants',type=int)
-parser.add_argument('-d','--delta',type=float)
-parser.add_argument('-r','--rho',type=float)
-parser.add_argument('-min',type=float)
-parser.add_argument('-max',type=float)
+parser = argparse.ArgumentParser(
+                    prog='Iso3d Ant Optimization',
+                    description='We run an ant colony to find the best paramters for an iso3d executions',
+                    epilog='Good Luck :)')
+parser.add_argument('-u','--user',type=int, help="user number in chome")
+parser.add_argument('-m','--method',type=str, choices={'linear','relu','quadratic'},help="Pheromons distribution method")
+parser.add_argument('-i','--iteration',type=int, help="number of iterations the ant colony algorithm")
+parser.add_argument('-n','--numberOfAnt',type=int)
+parser.add_argument('-d','--delta',type=float,help="base quantity of pheromons available for each ant")
+parser.add_argument('-r','--rho',type=float,help="coefficient of evaporation of the pheromons")
+parser.add_argument('-min',type=float,help="the minimum pheromon each edge can hold")
+parser.add_argument('-max',type=float,help="the maximum pheromon each edge can hold")
+
+#get the user if forgot to set
+res = subprocess.run("whoami", shell=True, stdout=subprocess.PIPE)
+res = str(res.stdout,'utf-8')
 
 # Parse the shell arguments
 args = parser.parse_args()
-user_id = int(args.user) if args.user else 1
-method = args.method if args.method else 1
-ITER = args.iter if args.iter else 50
-N = args.nbants if args.nbants else 20
+user_id = int(args.user) if args.user else int(res[6:])
+method = args.method if args.method else 'linear'
+ITER = args.iteration if args.iteration else 50
+N = args.numberOfAnt if args.numberOfAnt else 20
 delta = args.delta if args.delta else 0.1
 rho = args.rho if args.rho else 0.1
 min = args.min if args.min else 0.
@@ -42,11 +50,11 @@ set_user_id(user_id)
 # initialize the colony on the root process
 if Me == 0:
   # Choose the redistribution strategy
-  if method == 1:
+  if method == 'linear':
     redistribution_strategy = RedistributionStrategy.Linear
-  elif method == 2:
+  elif method == 'quadratic':
     redistribution_strategy = RedistributionStrategy.Quadratic
-  else:
+  elif method == 'relu':
     redistribution_strategy = RedistributionStrategy.Relu
 
   # Create the colony
