@@ -1,3 +1,2 @@
 __pycache__/
-visu/figs/
-visu/states/
+Dashboard/main/datasets/*

@@ -64,10 +64,16 @@ class Colony:
         node.pheromons = [1.0 for i in range(param.domain_dim)]
         return node
 
-    def __init__(self, N=100, rho=0.1, delta=0.05, params_to_explore=PARAMS_TO_EXPLORE): 
+    def __init__(self, 
+                 N: int=100, 
+                 rho: float=0.1, 
+                 delta: float=0.05, 
+                 redistribution_strategy: RedistributionStrategy=RedistributionStrategy.Linear, 
+                 params_to_explore=PARAMS_TO_EXPLORE): 
         self.N = N
         self.rho = rho
         self.delta = delta
+        self.redistribution_strategy = redistribution_strategy
         self.ants = [Ant() for i in range(N)]
         self.root = Colony.create_nodes(params_to_explore)
 
@@ -97,7 +103,7 @@ class Colony:
         # Sort ants according to Gflops
         self.ants = sorted(self.ants, key=lambda x: x.points, reverse=True)
         # Set ants' multiplier according to the rank position
-        set_ants_mult(self.ants, RedistributionStrategy.Quadratic) 
+        set_ants_mult(self.ants, self.redistribution_strategy) 
     
 
     def run(self):
@@ -113,7 +119,7 @@ class Colony:
             # Update pheromon and probability of each node
             self.update_nodes()
             # Dump solution for visualization
-            dump_state(i, [ant.get_solution() for ant in self.ants])
+            dump_state(i, [ant.export_solution() for ant in self.ants])
 
     def print(self, list=None):
         if not list:

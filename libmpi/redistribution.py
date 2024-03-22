@@ -1,6 +1,6 @@
 from typing import List
 from enum import Enum
-from lib.ant import *
+from libmpi.ant import Ant
 
 class RedistributionStrategy(Enum):
     Linear = 1

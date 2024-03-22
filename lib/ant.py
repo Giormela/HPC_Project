@@ -13,14 +13,12 @@ class Ant:
         self.points = 0.0
 
     def get_param_solution(self, param) -> str:
-        sol = self.solution[param] if param in self.solution else PARAMS_DICT[param].default
-        return str(sol)
+        return self.solution[param] if param in self.solution else PARAMS_DICT[param].default
     
-    def get_solution(self):
-        return {param: self.get_param_solution(param) for param in PARAMS_DICT}
-        #for param in PARAMS_DICT:
-        #    res[param] = self.get_param_solution(param)
-        #return res
+    def export_solution(self):
+        res = {tuple[0]: tuple[1].get_index_from_value(self.get_param_solution(tuple[0])) for tuple in PARAMS_DICT.items()}
+        res["gflops"] = self.points
+        return res
 
     def rank_solution(self):
         olevel = self.get_param_solution("olevel")

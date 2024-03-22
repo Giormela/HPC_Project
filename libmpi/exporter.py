@@ -1,6 +1,5 @@
 from typing import Dict, List
-from lib.path import LOGS_PATH
-from lib.colony import *
+from libmpi.path import get_logs_path
 import csv
 
 CONV_DICT = {"olevel": "opti_flag_id", 
@@ -12,13 +11,9 @@ CONV_DICT = {"olevel": "opti_flag_id",
              "gflops": "rank"}
 
 
-
-
-
-
 def dump_state(nb_iter, solutions: List[Dict[str, str]]):
     solutions = convert_labels(solutions)
-    filename = LOGS_PATH + "/data" + str(nb_iter) + ".csv"
+    filename = get_logs_path() + "/data" + str(nb_iter) + ".csv"
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=solutions[0].keys())
         writer.writeheader()
