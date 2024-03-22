@@ -4,6 +4,7 @@ from mpi4py import MPI
 import numpy as np
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
+from libmpi.colony_min_max import Colony_min_max
 from libmpi.param import PARAMS_DICT
 from libmpi.redistribution import RedistributionStrategy
 from libmpi.path import set_user_id
@@ -20,6 +21,8 @@ parser.add_argument('-i','--iter',type=int)
 parser.add_argument('-n','--nbants',type=int)
 parser.add_argument('-d','--delta',type=float)
 parser.add_argument('-r','--rho',type=float)
+parser.add_argument('-min',type=float)
+parser.add_argument('-max',type=float)
 args = parser.parse_args()
 user_id = int(args.user) if args.user else 1
 method = args.method if args.method else 1
@@ -27,6 +30,8 @@ ITER = args.iter if args.iter else 50
 N = args.nbants if args.nbants else 20
 delta = args.delta if args.delta else 0.1
 rho = args.rho if args.rho else 0.1
+min = args.min if args.min else 0.
+max = args.max if args.max else float('inf')
 
 def get_array_from_solution(solution):
   return np.array([PARAMS_DICT[param].get_index_from_value(solution[param]) for param in PARAMS_DICT])
@@ -45,10 +50,10 @@ if Me == 0:
   # Set and sharing user id 
   set_user_id(user_id)
 
-  colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
+if min != 0 or max != np.inf:
+  colony = Colony_min_max(min=min, max=max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 else:
-  # Setting user id 
-  set_user_id(user_id)
+  colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 
 for i in range(ITER):
   
