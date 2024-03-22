@@ -1,7 +1,7 @@
 import os
 import subprocess
 import re
-from libmpi.path import get_makefile_path
+from libmpi.path import get_makefile_path, get_home_path
 
 def execute_binary(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_size, n3_size):
     filename = "iso3dfd_dev13_cpu_" + olevel + "_" + simd + ".exe"
@@ -10,6 +10,7 @@ def execute_binary(olevel, simd, n1, n2, n3, num_threads, num_reps, n1_size, n2_
         " " + num_threads + " " + num_reps + \
         " " + n1_size + " " + n2_size + " " + n3_size
     res = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+    os.chdir(get_home_path())
     return res
 
 def execute_makefile(olevel="-O3", simd="avx2"):
