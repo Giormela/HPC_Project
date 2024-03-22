@@ -4,7 +4,7 @@ from mpi4py import MPI
 import numpy as np
 from libmpi.cost import cost_function
 from libmpi.colony import Colony
-from libmpi.colony_min_max import Colony_min_max
+from libmpi.colony_min_max import ColonyMinMax
 from libmpi.param import PARAMS_DICT
 from libmpi.redistribution import RedistributionStrategy
 from libmpi.path import set_user_id
@@ -51,7 +51,7 @@ if Me == 0:
   set_user_id(user_id)
 
 if min != 0 or max != np.inf:
-  colony = Colony_min_max(min=min, max=max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
+  colony = ColonyMinMax(min=min, max=max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 else:
   colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 
