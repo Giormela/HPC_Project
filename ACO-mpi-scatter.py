@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#SBATCH --time=4
 import argparse
 import subprocess
 import sys
@@ -21,13 +23,14 @@ parser = argparse.ArgumentParser(
                     description='We run an ant colony to find the best paramters for an iso3d executions',
                     epilog='Good Luck :)')
 parser.add_argument('-u','--user',type=int, help="user number in chome")
-parser.add_argument('-m','--method',type=str, choices={'linear','relu','quadratic'},help="Pheromons distribution method")
+parser.add_argument('-m','--method',type=str, choices={'linear','relu','quadratic'},help="Pheromons distribution method linear, relu or quadratic")
 parser.add_argument('-i','--iteration',type=int, help="number of iterations the ant colony algorithm")
 parser.add_argument('-n','--numberOfAnt',type=int)
 parser.add_argument('-d','--delta',type=float,help="base quantity of pheromons available for each ant")
 parser.add_argument('-r','--rho',type=float,help="coefficient of evaporation of the pheromons")
 parser.add_argument('-min',type=float,help="the minimum pheromon each edge can hold")
 parser.add_argument('-max',type=float,help="the maximum pheromon each edge can hold")
+parser.add_argument('--cachegrind', nargs='?', const=True, default=False, help="adds the test of valgrind with cachegrind for the best result at the end")
 
 #get the user if forgot to set
 res = subprocess.run("whoami", shell=True, stdout=subprocess.PIPE)
@@ -95,3 +98,7 @@ for i in range(ITER):
     print(f"Number of cost function calls: {(i+1)*N}")
     print(f"Total Execution time: {round(colony.execution_time,2)} s")
     print()
+
+# calling cachegrind to get a cache analysis
+if Me == 0 and args.cachegrind:
+  colony.cachegrind()

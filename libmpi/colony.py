@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+#SBATCH --time=
 from ast import List
 from libmpi.ant import * 
 from libmpi.redistribution import RedistributionStrategy, set_ants_mult
 from libmpi.exporter import dump_state
 from copy import deepcopy
+from libmpi.path import get_makefile_path
 import random
 
 PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
@@ -141,7 +144,13 @@ class Colony:
     def export(self, nb_iter: int):
         dump_state(nb_iter, [ant.export_solution() for ant in self.ants])
 
-    
+    # calling cachegrind to get a cache analysis
+    def cachegrind(self):
+        res = subprocess.run(f'valgrind --tool=cachegrind {get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe 256 256 256 {self.best_solution["num_threads"]} 10 {self.best_solution["n1_size"]} {self.best_solution["n2_size"]} {self.best_solution["n3_size"]}' , shell=True, stdout=subprocess.PIPE)
+        res = str(res.stdout,'utf-8')
+        print(res)
+
+
     def run(self):
         for ant in self.ants:
             self.root.explored_by_ant(ant)
