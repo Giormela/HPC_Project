@@ -129,9 +129,8 @@ for i in range(ITER):
     print()
 
   nNoImprovement = comm.bcast(nNoImprovement, root=0)
-# calling cachegrind to get a cache analysis
-if Me == 0 and args.cachegrind:
-  l1_miss_rate, l3_miss_rate = colony.cachegrind(pb_size)
+
+if Me == 0:
   print("---------------------------------------------------")
   print("This is the ACO algorithm with the following parameters")
   print("Pheromon distribution method: ",method)
@@ -147,8 +146,10 @@ if Me == 0 and args.cachegrind:
   print("Number of Cost Funtions Calls", (finalIterNumber * N))
   print("Total Execution time: ", round(colony.execution_time,2), "s")
   print("Estimated financial cost: ", round((colony.execution_time // 60) * 0.02,2), "€")
-  print("Best solution cache analysis:")
-  print("L1 hit rate (data read) : ", round(100 - float(l1_miss_rate),2), "%")
-  print("L3 hit rate (data read) : ", round(100 - float(l3_miss_rate),2), "%")
+  if args.cachegrind:
+    l1_miss_rate, l3_miss_rate = colony.cachegrind(pb_size)
+    print("Best solution cache analysis:")
+    print("L1 hit rate (data read) : ", round(100 - float(l1_miss_rate),2), "%")
+    print("L3 hit rate (data read) : ", round(100 - float(l3_miss_rate),2), "%")
   print("===================================================")
   print("Presented by: Giorgio Bonessa, James Housden, Alex Melhem, Adrien Nguyen and Wolfgang Walter")
