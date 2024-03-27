@@ -151,9 +151,9 @@ class Colony:
         cmd = ['valgrind', '--tool=cachegrind', f'{get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe', f'{size}', f'{size}', f'{size}', f'{self.best_solution["num_threads"]}', '1', f'{self.best_solution["n1_size"]}', f'{self.best_solution["n2_size"]}', f'{self.best_solution["n3_size"]}' ]
         res = subprocess.run(cmd , capture_output=True, text=True)
         res = res.stderr.split('\n')
-        # get lines that include with "D1  miss rate" and  "LLd miss rate"
-        l1_miss_rate_match = re.search(r'D1\s+miss rate:\s+[\d.]+%\s+\(([\d.]+)%\s+\+', res)
-        l3_miss_rate_match = re.search(r'LLd\s+miss rate:\s+[\d.]+%\s+\(([\d.]+)%\s+\+', res)
+        # Extract the miss rates
+        l1_miss_rate_match = re.search(r'D1\s+miss rate:\s+\d+\.\d+%\s+\(\s*([\d.]+)%\s+\+', res)
+        l3_miss_rate_match = re.search(r'LLd\s+miss rate:\s+\d+\.\d+%\s+\(\s*([\d.]+)%\s+\+', res)
         # Extract the required miss rates if matches were found
         l1_miss_rate = l1_miss_rate_match.group(1) if l1_miss_rate_match else None
         l3_miss_rate = l3_miss_rate_match.group(1) if l3_miss_rate_match else None
