@@ -150,7 +150,7 @@ class Colony:
     def cachegrind(self, size):
         cmd = ['valgrind', '--tool=cachegrind', f'{get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe', f'{size}', f'{size}', f'{size}', f'{self.best_solution["num_threads"]}', '1', f'{self.best_solution["n1_size"]}', f'{self.best_solution["n2_size"]}', f'{self.best_solution["n3_size"]}' ]
         res = subprocess.run(cmd , capture_output=True, text=True)
-        res = res.stderr.split('\n')
+        res = res.stderr
         # Extract the miss rates
         l1_miss_rate_match = re.search(r'D1\s+miss rate:\s+\d+\.\d+%\s+\(\s*([\d.]+)%\s+\+', res)
         l3_miss_rate_match = re.search(r'LLd\s+miss rate:\s+\d+\.\d+%\s+\(\s*([\d.]+)%\s+\+', res)
