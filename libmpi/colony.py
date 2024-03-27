@@ -148,9 +148,17 @@ class Colony:
 
     # calling cachegrind to get a cache analysis
     def cachegrind(self, size):
-        res = subprocess.run(f'valgrind --tool=cachegrind {get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe {size} {size} {size} {self.best_solution["num_threads"]} 10 {self.best_solution["n1_size"]} {self.best_solution["n2_size"]} {self.best_solution["n3_size"]}' , shell=True, stdout=subprocess.PIPE)
-        res = str(res.stdout,'utf-8')
-        print(res)
+        cmd = ['valgrind', '--tool=cachegrind', f'{get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe', f'{size}', f'{size}', f'{size}', f'{self.best_solution["num_threads"]}', '1', f'{self.best_solution["n1_size"]}', f'{self.best_solution["n2_size"]}', f'{self.best_solution["n3_size"]}' ]
+        res = subprocess.run(cmd , capture_output=True, text=True)
+        res = res.stderr.split('\n')
+        # get lines that include with "D1  miss rate" and  "LLd miss rate"
+        l1_miss_rate_match = re.search(r'D1\s+miss rate:\s+[\d.]+%\s+\(([\d.]+)%\s+\+', res)
+        l3_miss_rate_match = re.search(r'LLd\s+miss rate:\s+[\d.]+%\s+\(([\d.]+)%\s+\+', res)
+        # Extract the required miss rates if matches were found
+        l1_miss_rate = l1_miss_rate_match.group(1) if l1_miss_rate_match else None
+        l3_miss_rate = l3_miss_rate_match.group(1) if l3_miss_rate_match else None
+        return l1_miss_rate, l3_miss_rate
+        
 
 
     def run(self):

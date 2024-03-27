@@ -45,9 +45,9 @@ ITER = args.iteration if args.iteration else 50
 N = args.numberOfAnt if args.numberOfAnt else 20
 delta = args.delta if args.delta else 0.1
 rho = args.rho if args.rho else 0.1
-min = args.min if args.min else 0.
-max = args.max if args.max else float('inf')
-size = args.size if args.size else 256
+aco_min = args.min if args.min else 0.
+aco_max = args.max if args.max else float('inf')
+pb_size = args.size if args.size else 256
 
 # Set the user id for all processes
 set_user_id(user_id)
@@ -57,11 +57,11 @@ if Me == 0:
   # Header of the output
   print("This is the ACO algorithm with the following parameters")
   print("Pheromon distribution method: ",method)
-  print("Minimum pheromons per edge: ", min)
-  print("Maximum pheromons per edge: ", max)
+  print("Minimum pheromons per edge: ", aco_min)
+  print("Maximum pheromons per edge: ", aco_max)
   print("Number of Iterations: ", ITER)
   print("Number of Ants: ", N)
-  print("Problem size: ", size)
+  print("Problem size: ", pb_size)
   print("Base pheromons per ant: ", delta)
   print("Coefficient of evaporation: ", rho)
   print("===================================================")
@@ -75,13 +75,13 @@ if Me == 0:
     redistribution_strategy = RedistributionStrategy.Relu
 
   # Create the colony
-  if min != 0 or max != np.inf:
-    colony = ColonyMinMax(min=min, max=max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
+  if aco_min != 0 or aco_max != np.inf:
+    colony = ColonyMinMax(min=aco_min, max=aco_max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
   else:
     colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 
   # Number of iterations without improvement before stopping
-  nStop = min(ITER//10, 10)
+  nStop = max(ITER//10, 10)
   
   # Number of iterations without improvement
   nNoImprovement = 0
@@ -107,7 +107,7 @@ for i in range(ITER):
   results = []
   
   for s, solution in batch:
-    results.append((s, cost_function(solution["olevel"], solution["simd"], size, size, size, solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
+    results.append((s, cost_function(solution["olevel"], solution["simd"], str(pb_size), str(pb_size), str(pb_size), solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
   
   results = comm.gather(results, root=0)
   
@@ -131,19 +131,22 @@ for i in range(ITER):
 
 # calling cachegrind to get a cache analysis
 if Me == 0 and args.cachegrind:
-  colony.cachegrind(size)
+  l1_miss_rate, l3_miss_rate = colony.cachegrind(pb_size)
   print("---------------------------------------------------")
   print("This is the ACO algorithm with the following parameters")
   print("Pheromon distribution method: ",method)
-  print("Minimum pheromons per edge: ", min)
-  print("Maximum pheromons per edge: ", max)
+  print("Minimum pheromons per edge: ", aco_min)
+  print("Maximum pheromons per edge: ", aco_max)
   print("Number of Iterations: ", ITER)
   print("Number of Ants: ", N)
   print("Number of Cost Funtions Calls", (finalIterNumber * N))
-  print("Problem size: ", size)
+  print("Problem size: ", pb_size)
   print("Base pheromons per ant: ", delta)
   print("Coefficient of evaporation: ", rho)
   print("---------------------------------------------------")
   print("Best solution found: ", colony.best_solution, " with ", colony.best_result, " Gflops")
+  print("Best solution cache analysis:")
+  print("L1 hit rate : ", round(100 - float(l1_miss_rate),2), "%")
+  print("L3 hit rate : ", round(100 - float(l3_miss_rate),2), "%")
   print("===================================================")
   print("Presented by: Giorgio Bonessa, James Housden, Alex Melhem, Adrien Nguyen and Wolfgang Walter")
