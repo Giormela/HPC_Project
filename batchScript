@@ -8,6 +8,7 @@
 source /etc/profile
 
 module load py-mpi4py/3.1.4/gcc-12.3.0-openmpi
+module load valgrind/3.20.0/gcc-12.3.0-openmpi
 #module load ... others modules to load
 
 # go in the right directory (where is the pgm to execute)
