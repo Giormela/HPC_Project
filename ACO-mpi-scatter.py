@@ -29,8 +29,8 @@ parser.add_argument('-n','--numberOfAnt',type=int)
 parser.add_argument('-s','--size',type=int, choices={256, 512}, help="Problem size")
 parser.add_argument('-d','--delta',type=float,help="base quantity of pheromons available for each ant")
 parser.add_argument('-r','--rho',type=float,help="coefficient of evaporation of the pheromons")
-parser.add_argument('-min',type=float,help="the minimum pheromon each edge can hold")
-parser.add_argument('-max',type=float,help="the maximum pheromon each edge can hold")
+parser.add_argument('--min',type=float,help="the minimum pheromon each edge can hold")
+parser.add_argument('--max',type=float,help="the maximum pheromon each edge can hold")
 parser.add_argument('--cachegrind', nargs='?', const=True, default=False, help="adds the test of valgrind with cachegrind for the best result at the end")
 
 #get the user if forgot to set
