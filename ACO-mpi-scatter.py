@@ -81,7 +81,7 @@ if Me == 0:
     colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 
   # Number of iterations without improvement before stopping
-  nStop = int(min(0.04*ITER, 4))
+  nStop = min(ITER//10, 10)
   
   # Number of iterations without improvement
   nNoImprovement = 0
@@ -114,6 +114,8 @@ for i in range(ITER):
     improved, iter_best_solution, iter_best_result = colony.rank_ants()
     if not improved:
       nNoImprovement += 1
+    else:
+      nNoImprovement = 0
     colony.update_nodes()
     colony.export(i)
     print(f"Iteration {i} best solution: {iter_best_solution} with {iter_best_result} Gflops")
