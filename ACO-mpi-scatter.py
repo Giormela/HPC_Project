@@ -86,12 +86,15 @@ if Me == 0:
   # Number of iterations without improvement
   nNoImprovement = 0
   
+  finalIterNumber = 0
+  
 # Run the ACO algorithm
 for i in range(ITER):
   
   solutions = None
   
   if Me == 0:
+    finalIterNumber = i
     if nNoImprovement >= nStop:
       print(f"Stopping the algorithm after {nNoImprovement} iterations without improvement")
       break
@@ -136,7 +139,7 @@ if Me == 0 and args.cachegrind:
   print("Maximum pheromons per edge: ", max)
   print("Number of Iterations: ", ITER)
   print("Number of Ants: ", N)
-  print("Number of Cost Funtions Calls", (ITER * N))
+  print("Number of Cost Funtions Calls", (finalIterNumber * N))
   print("Problem size: ", size)
   print("Base pheromons per ant: ", delta)
   print("Coefficient of evaporation: ", rho)
