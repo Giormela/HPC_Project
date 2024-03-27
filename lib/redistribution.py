@@ -6,18 +6,20 @@ class RedistributionStrategy(Enum):
     Linear = 1
     Quadratic = 2
     Relu = 3
+    Performance = 4
 
 
 def set_ants_mult(ants: List[Ant], strategy=RedistributionStrategy.Linear):
     fun = None
 
     if strategy == RedistributionStrategy.Linear:
-            fun = linear_redistribution
+        fun = linear_redistribution
     elif strategy == RedistributionStrategy.Quadratic:
-            fun = quadatic_redistribution
+        fun = quadatic_redistribution
     elif strategy == RedistributionStrategy.Relu:
-            fun = relu_redistribution
-
+        fun = relu_redistribution
+    elif strategy == RedistributionStrategy.Performance:
+        fun = performance_redistribution
     fun(ants)
 
 def linear_redistribution(ants: List[Ant]):
@@ -43,3 +45,7 @@ def relu_redistribution(ants: List[Ant]):
 
     for i in range(len(ants)):
         ants[i].pheromon_mult = max(top-step*i,0)
+        
+def performance_redistribution(ants: List[Ant]):
+    for i in range(len(ants)):
+        ants[i].pheromon_mult = 10*(ants[i].points/140)
