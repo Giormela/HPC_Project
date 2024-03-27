@@ -94,7 +94,7 @@ for i in range(ITER):
   solutions = None
   
   if Me == 0:
-    finalIterNumber = i
+    finalIterNumber += 1
     if nNoImprovement >= nStop:
       print(f"Stopping the algorithm after {nNoImprovement} iterations without improvement")
       break
