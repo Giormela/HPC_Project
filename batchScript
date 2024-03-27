@@ -61,7 +61,7 @@ if ! [[ "$user" =~ ^[1-9]+$ ]]; then
     echo "Error: Argument user is not a number from 1-9"
     exit 128
 fi
-if [[ "$method" != "linear" && "$method" != "quadratic" && "$method" != "relu"]]; then
+if [[ "$method" != "linear" && "$method" != "quadratic" && "$method" != "relu" ]]; then
     echo "Error: Argument method must be one of GET, POST, PUT, DELETE."
     exit 128
 fi
