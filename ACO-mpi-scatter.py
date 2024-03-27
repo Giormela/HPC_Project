@@ -48,7 +48,7 @@ rho = args.rho if args.rho else 0.1
 aco_min = args.min if args.min else 0.
 aco_max = args.max if args.max else float('inf')
 pb_size = args.size if args.size else 256
-
+nNoImprovement = 0
 # Set the user id for all processes
 set_user_id(user_id)
 
@@ -83,9 +83,6 @@ if Me == 0:
   # Number of iterations without improvement before stopping
   nStop = max(ITER//10, 10)
   
-  # Number of iterations without improvement
-  nNoImprovement = 0
-  
   finalIterNumber = 0
   
 # Run the ACO algorithm
@@ -93,11 +90,13 @@ for i in range(ITER):
   
   solutions = None
   
+  if nNoImprovement >= nStop:
+    if Me == 0:
+      print(f"Stopping the algorithm after {nNoImprovement} iterations without improvement")
+    break
+  
   if Me == 0:
     finalIterNumber += 1
-    if nNoImprovement >= nStop:
-      print(f"Stopping the algorithm after {nNoImprovement} iterations without improvement")
-      break
     print(f"------------------- Iteration {i} -------------------")
     solutions = colony.run()
     solutions = [[solutions[j] for j in range(i, len(solutions), size)] for i in range(size)]
@@ -129,6 +128,7 @@ for i in range(ITER):
     print(f"Total Execution time: {round(colony.execution_time,2)} s")
     print()
 
+  nNoImprovement = comm.bcast(nNoImprovement, root=0)
 # calling cachegrind to get a cache analysis
 if Me == 0 and args.cachegrind:
   l1_miss_rate, l3_miss_rate = colony.cachegrind(pb_size)
