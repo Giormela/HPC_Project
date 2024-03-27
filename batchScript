@@ -42,7 +42,7 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     exit 0
 fi
 
-while getopts 'n:u:m:i:a:d:r' flag; do
+while getopts 'n:u:m:i:a:d:r:' flag; do
     case "${flag}" in
         n) numberProcess="${OPTARG}" ;;
         u) user="${OPTARG}" ;;
