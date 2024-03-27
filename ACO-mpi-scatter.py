@@ -134,6 +134,7 @@ if Me == 0 and args.cachegrind:
   print("Maximum pheromons per edge: ", max)
   print("Number of Iterations: ", ITER)
   print("Number of Ants: ", N)
+  print("Number of Cost Funtions Calls", (ITER * N))
   print("Problem size: ", size)
   print("Base pheromons per ant: ", delta)
   print("Coefficient of evaporation: ", rho)
