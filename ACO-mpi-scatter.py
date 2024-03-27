@@ -26,6 +26,7 @@ parser.add_argument('-u','--user',type=int, help="user number in chome")
 parser.add_argument('-m','--method',type=str, choices={'linear','relu','quadratic'},help="Pheromons distribution method linear, relu or quadratic")
 parser.add_argument('-i','--iteration',type=int, help="number of iterations the ant colony algorithm")
 parser.add_argument('-n','--numberOfAnt',type=int)
+parser.add_argument('-s','--size',type=int, choices={256, 512}, help="Problem size")
 parser.add_argument('-d','--delta',type=float,help="base quantity of pheromons available for each ant")
 parser.add_argument('-r','--rho',type=float,help="coefficient of evaporation of the pheromons")
 parser.add_argument('-min',type=float,help="the minimum pheromon each edge can hold")
@@ -46,12 +47,25 @@ delta = args.delta if args.delta else 0.1
 rho = args.rho if args.rho else 0.1
 min = args.min if args.min else 0.
 max = args.max if args.max else float('inf')
+size = args.size if args.size else 256
 
 # Set the user id for all processes
 set_user_id(user_id)
 
 # initialize the colony on the root process
 if Me == 0:
+  # Header of the output
+  print("This is the ACO algorithm with the following parameters")
+  print("Pheromon distribution method: ",method)
+  print("Minimum pheromons per edge: ", min)
+  print("Maximum pheromons per edge: ", max)
+  print("Number of Iterations: ", ITER)
+  print("Number of Ants: ", N)
+  print("Problem size: ", size)
+  print("Base pheromons per ant: ", delta)
+  print("Coefficient of evaporation: ", rho)
+  print("===================================================")
+
   # Choose the redistribution strategy
   if method == 'linear':
     redistribution_strategy = RedistributionStrategy.Linear
@@ -66,12 +80,21 @@ if Me == 0:
   else:
     colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
 
+  # Number of iterations without improvement before stopping
+  nStop = int(min(0.04*ITER, 4))
+  
+  # Number of iterations without improvement
+  nNoImprovement = 0
+  
 # Run the ACO algorithm
 for i in range(ITER):
   
   solutions = None
   
   if Me == 0:
+    if nNoImprovement >= nStop:
+      print(f"Stopping the algorithm after {nNoImprovement} iterations without improvement")
+      break
     print(f"------------------- Iteration {i} -------------------")
     solutions = colony.run()
     solutions = [[solutions[j] for j in range(i, len(solutions), size)] for i in range(size)]
@@ -81,14 +104,16 @@ for i in range(ITER):
   results = []
   
   for s, solution in batch:
-    results.append((s, cost_function(solution["olevel"], solution["simd"], "256", "256", "256", solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
+    results.append((s, cost_function(solution["olevel"], solution["simd"], size, size, size, solution["num_threads"], "100", solution["n1_size"], solution["n2_size"], solution["n3_size"])))
   
   results = comm.gather(results, root=0)
   
   if Me == 0:
     results = [item for sublist in results for item in sublist]
     colony.set_results(results)
-    iter_best_solution, iter_best_result = colony.rank_ants()
+    improved, iter_best_solution, iter_best_result = colony.rank_ants()
+    if not improved:
+      nNoImprovement += 1
     colony.update_nodes()
     colony.export(i)
     print(f"Iteration {i} best solution: {iter_best_solution} with {iter_best_result} Gflops")
@@ -101,4 +126,18 @@ for i in range(ITER):
 
 # calling cachegrind to get a cache analysis
 if Me == 0 and args.cachegrind:
-  colony.cachegrind()
+  colony.cachegrind(size)
+  print("---------------------------------------------------")
+  print("This is the ACO algorithm with the following parameters")
+  print("Pheromon distribution method: ",method)
+  print("Minimum pheromons per edge: ", min)
+  print("Maximum pheromons per edge: ", max)
+  print("Number of Iterations: ", ITER)
+  print("Number of Ants: ", N)
+  print("Problem size: ", size)
+  print("Base pheromons per ant: ", delta)
+  print("Coefficient of evaporation: ", rho)
+  print("---------------------------------------------------")
+  print("Best solution found: ", colony.best_solution, " with ", colony.best_result, " Gflops")
+  print("===================================================")
+  print("Presented by: Giorgio Bonessa, James Housden, Alex Melhem, Adrien Nguyen and Wolfgang Walter")

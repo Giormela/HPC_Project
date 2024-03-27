@@ -3,6 +3,7 @@ from libmpi.colony import Colony
 from libmpi.colony import Node
 from libmpi.colony import PARAMS_TO_EXPLORE
 from libmpi.param import PARAMS_DICT
+from libmpi.redistribution import RedistributionStrategy
 
 class NodeMinMax(Node):
     def __init__(ColonyMinMax, self):
@@ -40,13 +41,20 @@ class ColonyMinMax(Colony):
         node.pheromons = [1.0 for i in range(param.domain_dim)]
         return node
     
-    def __init__(self, min, max, N=100, rho=0.1, delta=0.05):
+    def __init__(self, 
+                 N: int=100, 
+                 rho: float=0.1, 
+                 delta: float=0.05, 
+                 redistribution_strategy: RedistributionStrategy=RedistributionStrategy.Linear, 
+                 params_to_explore=PARAMS_TO_EXPLORE,
+                 min: float=0.0,
+                 max: float=float('inf')):
         if(min>max):
             sys.exit("Error: max must be bigger or equal to min")
         else:
             self.min = min
             self.max = max
-        super().__init__(N, rho, delta)
+        super().__init__(N, rho, delta, redistribution_strategy, params_to_explore)
     
     def getMin(self):
         return self.min

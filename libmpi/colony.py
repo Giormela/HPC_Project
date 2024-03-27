@@ -118,6 +118,7 @@ class Colony:
         iter_best_result = 0.0
         iter_best_solution = None
         # Evaluate the cost of each ant solution
+        improved = False
         for ant in self.ants:
             if ant.points > iter_best_result:
                 iter_best_result = ant.points
@@ -125,12 +126,13 @@ class Colony:
             if ant.points > self.best_result:
                 self.best_result = ant.points
                 self.best_solution = deepcopy(ant.get_solution())
+                improved = True
                 # print(f"New best solution: {self.best_solution} with {self.best_result} Gflops")
         # Sort ants according to Gflops
         self.ants = sorted(self.ants, key=lambda x: x.points, reverse=True)
         # Set ants' multiplier according to the rank position
         set_ants_mult(self.ants, self.redistribution_strategy)
-        return iter_best_solution, iter_best_result 
+        return improved, iter_best_solution, iter_best_result 
     
         
     def get_solutions(self):
@@ -145,8 +147,8 @@ class Colony:
         dump_state(nb_iter, [ant.export_solution() for ant in self.ants])
 
     # calling cachegrind to get a cache analysis
-    def cachegrind(self):
-        res = subprocess.run(f'valgrind --tool=cachegrind {get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe 256 256 256 {self.best_solution["num_threads"]} 10 {self.best_solution["n1_size"]} {self.best_solution["n2_size"]} {self.best_solution["n3_size"]}' , shell=True, stdout=subprocess.PIPE)
+    def cachegrind(self, size):
+        res = subprocess.run(f'valgrind --tool=cachegrind {get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe {size} {size} {size} {self.best_solution["num_threads"]} 10 {self.best_solution["n1_size"]} {self.best_solution["n2_size"]} {self.best_solution["n3_size"]}' , shell=True, stdout=subprocess.PIPE)
         res = str(res.stdout,'utf-8')
         print(res)
 
