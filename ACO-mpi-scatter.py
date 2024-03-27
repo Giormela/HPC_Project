@@ -49,6 +49,8 @@ aco_min = args.min if args.min else 0.
 aco_max = args.max if args.max else float('inf')
 pb_size = args.size if args.size else 256
 nNoImprovement = 0
+# Number of iterations without improvement before stopping
+nStop = max(ITER//10, 10)
 # Set the user id for all processes
 set_user_id(user_id)
 
