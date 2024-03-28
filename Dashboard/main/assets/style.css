@@ -1,6 +1,6 @@
 #slider-container {
     position: fixed;  /* Fix the position relative to the viewport */
-    bottom: 10%;       /* Distance from the top of the viewport */
+    bottom: 5%;       /* Distance from the top of the viewport */
     left: 50%;       /* Distance from the left side of the viewport */
     transform: translateX(-50%); /* Adjust based on the container's width */
     z-index: 1000;    /* Ensure it sits above other content */

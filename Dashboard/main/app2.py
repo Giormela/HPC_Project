@@ -24,6 +24,7 @@ dataset_directories = {
     'Linear Dataset': 'Dashboard/main/datasets/dataset_linear/',
     'Quadratic Dataset': 'Dashboard/main/datasets/dataset_quadratic/',
     'Relu dataset': 'Dashboard/main/datasets/dataset_relu/',
+    'Performance Dataset': 'Dashboard/main/datasets/dataset_performance/'
     # Add more directories here as needed
 }
 
@@ -68,9 +69,8 @@ df_sorted = df.sort_values(by='rank')
 
 def prepare_data(df):
     # Define mappings
-    opti_mapping = {1: '0fast', 2: 'O2', 3: 'O3'}
+    opti_mapping = {0: 'O3', 1: '0fast'}
     vecto_mapping = {1: 'sse', 2: 'avx', 3: 'avx2', 4: 'avx512'}
-    df['opti_flag_id'] = df['opti_flag_id']+1
     df['vecto_flag_id'] = df['vecto_flag_id'] +1
     # Create new columns with string representations
     df['Opti_flag'] = df['opti_flag_id'].map(opti_mapping)
@@ -87,6 +87,65 @@ def prepare_data(df):
 
 
 prepare_data(df)
+
+
+# Initialize a dictionary to store avg ranks for each category
+category_avg_ranks = {}
+
+for category, pathh_pattern in dataset_directories.items():
+    avg_ranks = []
+    # Sorted to ensure files are processed in order
+    for filepath in sorted(glob.glob(pathh_pattern+'*')):
+        ddf = pd.read_csv(filepath)
+        avg_rank = (ddf['rank'].sum())/len(ddf["rank"])
+        avg_ranks.append(avg_rank)
+    category_avg_ranks[category] = avg_ranks
+
+
+# Initialize a dictionary to store max ranks for each category
+category_max_ranks = {}
+
+for category, path_pattern in dataset_directories.items():
+    max_ranks = []
+    # Sorted to ensure files are processed in order
+    for filepath in sorted(glob.glob(path_pattern+'*')):
+        dddf = pd.read_csv(filepath)
+        max_rank = dddf['rank'].max()  # Calculate the maximum rank value
+        max_ranks.append(max_rank)
+    category_max_ranks[category] = max_ranks
+
+
+figgg = go.Figure()
+
+for category, avg_ranks in category_avg_ranks.items():
+    iterations = list(range(1, len(avg_ranks) + 1))
+    figgg.add_trace(go.Scatter(x=iterations, y=avg_ranks, mode='lines+markers', name=category))
+
+
+# Update layout if necessary
+figgg.update_layout(height=600, 
+                    title_text="Average Gflops Value Across Iterations by Method",
+                    xaxis_title = 'Iterations',
+                    yaxis_title = 'Gflops',
+                    legend_title = 'Methods'
+                    )
+
+# Initialize an empty figure for plotting max ranks
+figg = go.Figure()
+
+# Add a trace for each category's max ranks
+for category, max_ranks in category_max_ranks.items():
+    iterationss = list(range(1, len(max_ranks) + 1))
+    figg.add_trace(go.Scatter(x=iterationss, y=max_ranks, mode='lines+markers', name=category))
+
+# Customize the layout
+figg.update_layout(
+    height=600, 
+    title_text="Maximum Gflops Value Across Iterations by Category",
+    xaxis_title='Iterations',
+    yaxis_title='Max Gflops',
+    legend_title='Methods'
+)
 
 
 column_defs = [
@@ -113,7 +172,7 @@ color_scale_options = [
 
 # Prepare data for the dimensions of the Parcoords
 dimensions = [
-    {"label": "Optimization Flag", "values": df["opti_flag_id"], "tickvals": [1, 2, 3], "ticktext": df["Opti_flag"]},
+    {"label": "Optimization Flag", "values": df["opti_flag_id"], "tickvals": [0, 1, 2], "ticktext": df["Opti_flag"]},
     {"label": "Vectorization Flag", "values": df["vecto_flag_id"], "tickvals": [1, 2, 3, 4], "ticktext": df["Vecto_flag"]},
     {"range": [min(df["x_tbs"]), max(df["x_tbs"])], "label": "X TBS", "values": df["x_tbs"]},
     {"range": [min(df["y_tbs"]), max(df["y_tbs"])], "label": "Y TBS", "values": df["y_tbs"]},
@@ -151,14 +210,38 @@ slider_container = html.Div(
 )
 
 app.layout = dbc.Container([
-    html.Div(style={'margin': '80px'}),
+    html.Div(
+        style={
+            'display' : 'flex',
+            'alignItems': 'center',  # Align items vertically
+            'justifyContent': 'center',  # Center items horizontally
+            'backgroundColor': '#005F60',
+            'color': 'white',
+            'padding': '10px',
+            'position': 'fixed',
+            'width': '100%',
+            'top': 0,
+            'left': 0,
+            'zIndex': 9999,
+            'boxShadow': '0px 4px 8px 0px rgba(0,0,0,0.2)'  # Adding shadow
+        },
+        children=[
+            # Button aligned to the left
+            html.Div(open_modal_btn, style={'position': 'absolute', 'left': '200px '}),
+            
+            # Title centered
+            html.H1("HPC Ant colony Optimization", style={'textAlign': 'center'}),
+            html.H4("Number of Ants: ", id='ants-count-display', style={'position' : 'absolute', 'right': '200px', 'color': 'white'})
+            ]
+    ),
+    html.Div(style={'margin': '120px'}),
     dcc.Store(id='current-dataset'),
-    html.H2("Filtering Ants Paths with Parallel Coordinates"),
     html.Div(style={'margin': '40px'}),
     dcc.Store(id='current-dataset-directory'),
-    open_modal_btn,
     select_directory_modal,
-    html.H4("Number of Ants: ", id='ants-count-display'),  # Placeholder for displaying the number of ants
+    html.Div(style={'margin': '100px'}),
+    html.H2("Filtering Ants Paths with Parallel Coordinates"),
+    html.Div(style={'margin': '20px'}),
     dcc.Dropdown(
         id='colorscale-dropdown',
         options=color_scale_options,  # Assumes color_scale_options is defined
@@ -202,7 +285,7 @@ app.layout = dbc.Container([
     html.Div([
         dcc.Graph(id='bar-chart-n_threads')
     ]),
-        # Spacing and separator
+    # Spacing and separator
     html.Div(style={'margin': '100px'}),  # Adjust the margin value as needed for spacing
     html.Hr(),  # Horizontal line as a separator
     html.H2("Ants ranking"),  # Section title for bar charts
@@ -210,6 +293,19 @@ app.layout = dbc.Container([
     html.Div([
         dcc.Graph(id='bar-chart-rank')
     ]),
+
+    html.Div(style={'margin': '100px'}),  # Adjust the margin value as needed for spacing
+    html.Hr(),  # Horizontal line as a separator
+    html.H2("Method comparison"), 
+
+    dcc.Graph(
+        id='category-plot',
+        figure=figgg  # This is where you pass your figure to the Dash component
+    ),
+    dcc.Graph(
+        id='category-plot',
+        figure=figg  # This is where you pass your figure to the Dash component
+    ),
     html.Div(style={'margin': '200px'}),
 ])
 
@@ -370,13 +466,13 @@ def update_figure(dataset_json, selected_colorscale):
 
     # Prepare dimensions for the Parcoords
     dimensions = [
-        {"label": "Optimization Flag", "values": df["opti_flag_id"], "tickvals": [1, 2, 3], "ticktext": df["Opti_flag"]},
+        {"label": "Optimization Flag", "values": df["opti_flag_id"], "tickvals": [0, 1, 2], "ticktext": df["Opti_flag"]},
         {"label": "Vectorization Flag", "values": df["vecto_flag_id"], "tickvals": [1, 2, 3, 4], "ticktext": df["Vecto_flag"]},
         {"label": "X TBS", "values": df["x_tbs"]},
         {"label": "Y TBS", "values": df["y_tbs"]},
         {"label": "Z TBS", "values": df["z_tbs"]},
         {"label": "Number of Threads", "values": df["n_threads"]},
-        {"label": "Rank", "values": df["rank"]}
+        {"label": "Gflops", "values": df["rank"]}
     ]
 
     # Create the Parcoords figure using Graph Objects
@@ -406,9 +502,9 @@ def update_bar_charts(rowData):
             if param == "rank":
                 fig = px.bar(sorted_df, y='rank', text='rank',color="rank")
             else:
-                fig = px.bar(sorted_df, x=param, y='rank', text='rank',color_discrete_sequence=['#005F60'])
+                fig = px.bar(sorted_df, x=param, y='rank', text='rank', color_discrete_sequence=['#005F60'])
             fig.update_traces(texttemplate='%{text}', textposition='outside')
-            fig.update_layout(uniformtext_minsize=8)
+            fig.update_layout(uniformtext_minsize=8, yaxis_title = "Gflops")
             figures.append(fig)
             
         else:
