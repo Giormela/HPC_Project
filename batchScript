@@ -61,8 +61,8 @@ if ! [[ "$user" =~ ^[1-9]+$ ]]; then
     echo "Error: Argument user is not a number from 1-9"
     exit 128
 fi
-if [[ "$method" != "linear" && "$method" != "quadratic" && "$method" != "relu"  && "$method" != "performance" ]]; then
-    echo "Error: Argument method must be one of linear, quadratic, relu or performance."
+if [[ "$method" != "linear" && "$method" != "hyperbolic" && "$method" != "relu"  && "$method" != "performance" ]]; then
+    echo "Error: Argument method must be one of linear, hyperbolic, relu or performance."
     exit 128
 fi
 if ! [[ "$iter" =~ ^[0-9]+$ ]]; then
