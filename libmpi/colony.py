@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 #SBATCH --time=
-from ast import List
 from libmpi.ant import * 
 from libmpi.redistribution import RedistributionStrategy, set_ants_mult
 from libmpi.exporter import dump_state

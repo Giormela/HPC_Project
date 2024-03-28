@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --time=4
 import argparse
-import subprocess
-import sys
 from mpi4py import MPI
 import numpy as np
 from libmpi.cost import cost_function
@@ -58,6 +56,7 @@ if Me == 0:
   print("Problem size: ", pb_size)
   print("Base pheromons per ant: ", delta)
   print("Coefficient of evaporation: ", rho)
+  print("Number of processes: ", size)
   print("===================================================")
 
   # Choose the redistribution strategy
