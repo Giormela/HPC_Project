@@ -24,6 +24,7 @@ dataset_directories = {
     'Linear Dataset': 'Dashboard/main/datasets/dataset_linear/',
     'Quadratic Dataset': 'Dashboard/main/datasets/dataset_quadratic/',
     'Relu dataset': 'Dashboard/main/datasets/dataset_relu/',
+    'Performance dataset': 'Dashboard/main/datasets/dataset_performance/',
     # Add more directories here as needed
 }
 
