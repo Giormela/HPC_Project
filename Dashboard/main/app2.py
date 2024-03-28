@@ -22,9 +22,10 @@ dataset_path = 'Dashboard/main/datasets/dataset_linear/'
 # Define your dataset directories for selection
 dataset_directories = {
     'Linear Dataset': 'Dashboard/main/datasets/dataset_linear/',
-    'Quadratic Dataset': 'Dashboard/main/datasets/dataset_quadratic/',
+    'Hyperbolic Dataset': 'Dashboard/main/datasets/dataset_hyperbolic/',
     'Relu dataset': 'Dashboard/main/datasets/dataset_relu/',
     'Performance Dataset': 'Dashboard/main/datasets/dataset_performance/'
+    'Performance dataset': 'Dashboard/main/datasets/dataset_performance/',
     # Add more directories here as needed
 }
 
