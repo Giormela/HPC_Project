@@ -50,4 +50,4 @@ def relu_redistribution(ants: List[Ant]):
         
 def performance_redistribution(ants: List[Ant]):
     for i in range(len(ants)):
-        ants[i].pheromon_mult = 10*(ants[i].points/140)
+        ants[i].pheromon_mult = max(5*(ants[i].points-100)/35,0)

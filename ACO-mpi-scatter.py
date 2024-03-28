@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(
                     description='We run an ant colony to find the best paramters for an iso3d executions',
                     epilog='Good Luck :)')
 parser.add_argument('-u','--user',type=int, help="user number in chome")
-parser.add_argument('-m','--method',type=str, choices={'linear','relu','quadratic','performance'},help="Pheromons distribution method linear, relu or quadratic")
+parser.add_argument('-m','--method',type=str, choices={'linear','relu','hyperbolic','performance'},help="Pheromons distribution method linear, relu or hyperbolic. performance is giving pheromons based on the Gflops only over 100")
 parser.add_argument('-i','--iteration',type=int, help="number of iterations the ant colony algorithm")
 parser.add_argument('-n','--numberOfAnt',type=int)
 parser.add_argument('-s','--size',type=int, choices={256, 512}, help="Problem size")
@@ -71,7 +71,7 @@ if Me == 0:
   # Choose the redistribution strategy
   if method == 'linear':
     redistribution_strategy = RedistributionStrategy.Linear
-  elif method == 'quadratic':
+  elif method == 'hyperbolic':
     redistribution_strategy = RedistributionStrategy.Quadratic
   elif method == 'relu':
     redistribution_strategy = RedistributionStrategy.Relu
