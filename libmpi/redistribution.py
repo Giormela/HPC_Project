@@ -4,7 +4,7 @@ from libmpi.ant import Ant
 
 class RedistributionStrategy(Enum):
     Linear = 1
-    Quadratic = 2
+    Hyperbolic = 2
     Relu = 3
     Performance = 4
 
@@ -14,8 +14,8 @@ def set_ants_mult(ants: List[Ant], strategy=RedistributionStrategy.Linear):
 
     if strategy == RedistributionStrategy.Linear:
         fun = linear_redistribution
-    elif strategy == RedistributionStrategy.Quadratic:
-        fun = quadatic_redistribution
+    elif strategy == RedistributionStrategy.Hyperbolic:
+        fun = hyperbolic_redistribution
     elif strategy == RedistributionStrategy.Relu:
         fun = relu_redistribution
     elif strategy == RedistributionStrategy.Performance:
@@ -24,7 +24,7 @@ def set_ants_mult(ants: List[Ant], strategy=RedistributionStrategy.Linear):
     fun(ants)
 
 def linear_redistribution(ants: List[Ant]):
-    top = 2.0
+    top = 1.0
     step = top / len(ants)
 
     coeff = top
@@ -32,16 +32,15 @@ def linear_redistribution(ants: List[Ant]):
         ant.pheromon_mult = abs(coeff)
         coeff -= step
 
-# y = a / x
-def quadatic_redistribution(ants: List[Ant]):
-    top = 10.0
+def hyperbolic_redistribution(ants: List[Ant]):
+    top = 1.0
 
     for i in range(len(ants)):
         ants[i].pheromon_mult = top / ((i+1)**2)
 
 
 def relu_redistribution(ants: List[Ant]):
-    top = 2.0
+    top = 1.0
     step = 2*top/(len(ants))
 
     for i in range(len(ants)):
@@ -50,4 +49,4 @@ def relu_redistribution(ants: List[Ant]):
         
 def performance_redistribution(ants: List[Ant]):
     for i in range(len(ants)):
-        ants[i].pheromon_mult = 10*(ants[i].points/140)
+        ants[i].pheromon_mult = max(5*(ants[i].points-100)/35,0)

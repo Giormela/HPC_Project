@@ -5,7 +5,7 @@ from libmpi.ant import *
 from libmpi.redistribution import RedistributionStrategy, set_ants_mult
 from libmpi.exporter import dump_state
 from copy import deepcopy
-from libmpi.path import get_makefile_path
+from libmpi.path import MAKEFILE_PATH
 import random
 
 PARAMS_TO_EXPLORE = ["olevel", "simd", "num_threads", "n1_size", "n2_size", "n3_size"]
@@ -148,7 +148,7 @@ class Colony:
 
     # calling cachegrind to get a cache analysis
     def cachegrind(self, size):
-        cmd = ['valgrind', '--tool=cachegrind', f'{get_makefile_path()}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe', f'{size}', f'{size}', f'{size}', f'{self.best_solution["num_threads"]}', '10', f'{self.best_solution["n1_size"]}', f'{self.best_solution["n2_size"]}', f'{self.best_solution["n3_size"]}' ]
+        cmd = ['valgrind', '--tool=cachegrind', f'{MAKEFILE_PATH}/bin/iso3dfd_dev13_cpu_{self.best_solution["olevel"]}_{self.best_solution["simd"]}.exe', f'{size}', f'{size}', f'{size}', f'{self.best_solution["num_threads"]}', '10', f'{self.best_solution["n1_size"]}', f'{self.best_solution["n2_size"]}', f'{self.best_solution["n3_size"]}' ]
         res = subprocess.run(cmd , capture_output=True, text=True)
         res = res.stderr
         # Extract the miss rates

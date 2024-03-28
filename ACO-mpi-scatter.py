@@ -10,7 +10,6 @@ from libmpi.colony import Colony
 from libmpi.colony_min_max import ColonyMinMax
 from libmpi.param import PARAMS_DICT
 from libmpi.redistribution import RedistributionStrategy
-from libmpi.path import set_user_id
 
 # Create MPI environment
 comm = MPI.COMM_WORLD
@@ -23,7 +22,7 @@ parser = argparse.ArgumentParser(
                     description='We run an ant colony to find the best paramters for an iso3d executions',
                     epilog='Good Luck :)')
 parser.add_argument('-u','--user',type=int, help="user number in chome")
-parser.add_argument('-m','--method',type=str, choices={'linear','relu','quadratic','performance'},help="Pheromons distribution method linear, relu or quadratic")
+parser.add_argument('-m','--method',type=str, choices={'linear','relu','hyperbolic','performance'},help="Pheromons distribution method linear, relu or quadratic")
 parser.add_argument('-i','--iteration',type=int, help="number of iterations the ant colony algorithm")
 parser.add_argument('-n','--numberOfAnt',type=int)
 parser.add_argument('-s','--size',type=int, choices={256, 512}, help="Problem size")
@@ -33,13 +32,8 @@ parser.add_argument('--min',type=float,help="the minimum pheromon each edge can 
 parser.add_argument('--max',type=float,help="the maximum pheromon each edge can hold")
 parser.add_argument('--cachegrind', nargs='?', const=True, default=False, help="adds the test of valgrind with cachegrind for the best result at the end")
 
-#get the user if forgot to set
-res = subprocess.run("whoami", shell=True, stdout=subprocess.PIPE)
-res = str(res.stdout,'utf-8')
-
 # Parse the shell arguments
 args = parser.parse_args()
-user_id = int(args.user) if args.user else int(res[6:])
 method = args.method if args.method else 'linear'
 ITER = args.iteration if args.iteration else 50
 N = args.numberOfAnt if args.numberOfAnt else 20
@@ -51,8 +45,6 @@ pb_size = args.size if args.size else 256
 nNoImprovement = 0
 # Number of iterations without improvement before stopping
 nStop = max(ITER//10, 10)
-# Set the user id for all processes
-set_user_id(user_id)
 
 # initialize the colony on the root process
 if Me == 0:
@@ -71,8 +63,8 @@ if Me == 0:
   # Choose the redistribution strategy
   if method == 'linear':
     redistribution_strategy = RedistributionStrategy.Linear
-  elif method == 'quadratic':
-    redistribution_strategy = RedistributionStrategy.Quadratic
+  elif method == 'hyperbolic':
+    redistribution_strategy = RedistributionStrategy.Hyperbolic
   elif method == 'relu':
     redistribution_strategy = RedistributionStrategy.Relu
   elif method == 'performance':
