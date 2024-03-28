@@ -83,9 +83,6 @@ if Me == 0:
     colony = ColonyMinMax(min=aco_min, max=aco_max, rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
   else:
     colony = Colony(rho=rho, delta=delta, N=N, redistribution_strategy=redistribution_strategy)
-
-  # Number of iterations without improvement before stopping
-  nStop = max(ITER//10, 10)
   
   finalIterNumber = 0
   
