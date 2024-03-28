@@ -48,6 +48,7 @@ select_directory_modal = dbc.Modal(
     ],
     id="modal",
     is_open=False,  # Modal is initially closed
+    style={"top": "100px"}
 )
 
 # List all CSV files in the directory
@@ -217,7 +218,7 @@ app.layout = dbc.Container([
             'justifyContent': 'center',  # Center items horizontally
             'backgroundColor': '#005F60',
             'color': 'white',
-            'padding': '10px',
+            'padding': '5px 20px',
             'position': 'fixed',
             'width': '100%',
             'top': 0,
