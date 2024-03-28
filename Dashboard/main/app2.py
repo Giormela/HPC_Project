@@ -295,12 +295,12 @@ def update_slider(directory):
     csv_files = glob.glob(os.path.join(directory, '*.csv'))
     num_files = len(csv_files)
     min=0,
-    max=num_files-1,  # Use the dynamically determined number of files
+    max=num_files-2,  # Use the dynamically determined number of files
     value=0,  # Default value
-    marks={i: str(i) for i in range(num_files)},  # Ensure the range starts at 0 if your datasets are named starting from 0
+    marks={i: str(i) for i in range(num_files)},  # Ensure the range starts at 0 if your datasets are named starting from 0    
     step=1,
     # Reset slider value to 0 (default value) when directory changes
-    return num_files, marks, 0
+    return max[0], marks[0], 0
 
 @app.callback(
     Output('current-dataset', 'data'),
